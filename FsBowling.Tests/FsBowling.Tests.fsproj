@@ -9,6 +9,8 @@
   <ItemGroup>
     <Compile Include="RangeDataAttribute.fs" />
     <Compile Include="Extensions.fs" />
+    <Compile Include="FrameTests.fs" />
+    <Compile Include="PlayerTests.fs" />
   </ItemGroup>
 
   <ItemGroup>
