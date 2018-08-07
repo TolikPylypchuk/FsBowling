@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsBowling", "FsBowling\FsBowling.fsproj", "{BCFEA9C5-6F07-4E90-9186-EF98FDD0AFB5}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsBowling.Tests", "FsBowling.Tests\FsBowling.Tests.fsproj", "{33002B24-987C-4A83-95E5-D924E9B552B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{BCFEA9C5-6F07-4E90-9186-EF98FDD0AFB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCFEA9C5-6F07-4E90-9186-EF98FDD0AFB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCFEA9C5-6F07-4E90-9186-EF98FDD0AFB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33002B24-987C-4A83-95E5-D924E9B552B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33002B24-987C-4A83-95E5-D924E9B552B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33002B24-987C-4A83-95E5-D924E9B552B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33002B24-987C-4A83-95E5-D924E9B552B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
