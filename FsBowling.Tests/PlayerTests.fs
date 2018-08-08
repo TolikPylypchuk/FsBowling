@@ -1,9 +1,6 @@
 ﻿module FsBowling.PlayerTests
 
-open Chessie.ErrorHandling
-
 open Xunit
-open FsUnit.Xunit
 
 [<Fact>]
 let ``Creating a player should always be successful`` () =

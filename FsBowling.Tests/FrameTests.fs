@@ -1,9 +1,6 @@
 ﻿module FsBowling.FrameTests
 
-open Chessie.ErrorHandling
-
 open Xunit
-open FsUnit.Xunit
 
 [<Theory>]
 [<RangeData(1, 10)>]

@@ -11,6 +11,7 @@
     <Compile Include="DSL.fs" />
     <Compile Include="FrameTests.fs" />
     <Compile Include="PlayerTests.fs" />
+    <Compile Include="GameTests.fs" />
   </ItemGroup>
 
   <ItemGroup>
