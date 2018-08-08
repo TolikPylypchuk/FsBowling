@@ -7,26 +7,17 @@ open FsUnit.Xunit
 
 [<Theory>]
 [<RangeData(1, 10)>]
-let ``A normal frame should be created successfully when its number is valid`` num =
-    match Frame.create num with
-    | Ok (frame, []) -> frame |> should equal (NormalFrame.NotStarted |> Frame.Normal)
-    | _ -> sprintf "Failed creating a frame with number %i" num  |> failTest
+let ``A normal frame should be created successfully when its number is valid`` number =
+    Frame.create number |> shouldBeSuccess (NormalFrame.NotStarted |> Frame.Normal)
     
 [<Fact>]
 let ``A last frame should be created successfully when its number is valid`` () =
-    match Frame.create Frame.lastFrameNumber with
-    | Ok (frame, []) -> frame |> should equal (LastFrame.NotStarted |> Frame.Last)
-    | _ -> sprintf "Failed creating a frame with number %i" Frame.lastFrameNumber  |> failTest
+    Frame.create Frame.lastFrameNumber |> shouldBeSuccess (LastFrame.NotStarted |> Frame.Last)
     
 [<Theory>]
 [<InlineData(0)>]
 [<InlineData(-1)>]
 [<InlineData(11)>]
 [<InlineData(12)>]
-let ``A frame should not be created successfully when its number is not valid`` num =
-    match Frame.create num with
-    | Ok _ -> sprintf "Succeeded creating a frame with number %i" num  |> failTest
-    | Bad errors ->
-        match errors with
-        | error :: [] -> error |> should equal (InvalidFrameNumber num)
-        | _ -> sprintf "Unexpected error %A" errors |> failTest
+let ``A frame should not be created successfully when its number is not valid`` number =
+    Frame.create number |> shouldBeFailure [ InvalidFrameNumber number ]
