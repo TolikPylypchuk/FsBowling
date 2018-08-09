@@ -4,3 +4,4 @@ type BowlingError =
     | InvalidFrameNumber of int
     | PlayerListEmpty
     | DuplicatePlayers of PlayerName list
+    | InvalidNumberOfPinnes of int

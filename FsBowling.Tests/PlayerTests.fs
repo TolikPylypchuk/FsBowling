@@ -9,8 +9,7 @@ let ``Creating a player should always be successful`` () =
     let expected = {
         Name = name
         Frames = []
-        LastFrame = None
-        CurrentFrame = NormalFrame.NotStarted |> Frame.Normal
+        CurrentFrame = NotStarted
         CurrentFrameNumber = 1
     }
 

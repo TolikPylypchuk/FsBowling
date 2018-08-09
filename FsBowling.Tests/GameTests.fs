@@ -11,8 +11,7 @@ let ``Creating a game should be successful when the list of players is non-empty
             {
                 Name = name
                 Frames = []
-                LastFrame = None
-                CurrentFrame = NormalFrame.NotStarted |> Frame.Normal
+                CurrentFrame = NotStarted
                 CurrentFrameNumber = 1
             })
     }

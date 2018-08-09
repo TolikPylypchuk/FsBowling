@@ -3,14 +3,10 @@
 open Xunit
 
 [<Theory>]
-[<RangeData(1, 10)>]
+[<RangeData(1, 11)>]
 let ``A normal frame should be created successfully when its number is valid`` number =
-    Frame.create number |> shouldBeSuccess (NormalFrame.NotStarted |> Frame.Normal)
-    
-[<Fact>]
-let ``A last frame should be created successfully when its number is valid`` () =
-    Frame.create Frame.lastFrameNumber |> shouldBeSuccess (LastFrame.NotStarted |> Frame.Last)
-    
+    Frame.create number |> shouldBeSuccess NotStarted
+
 [<Theory>]
 [<InlineData(0)>]
 [<InlineData(-1)>]

@@ -5,7 +5,6 @@ open Chessie.ErrorHandling
 type Player = {
     Name : PlayerName
     Frames : Frame list
-    LastFrame : LastFrame option
     CurrentFrame : Frame
     CurrentFrameNumber : int
 }
@@ -18,7 +17,6 @@ module Player =
         return {
             Name = name
             Frames = []
-            LastFrame = None
             CurrentFrame = frame
             CurrentFrameNumber = one
         }

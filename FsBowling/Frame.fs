@@ -2,35 +2,59 @@
 
 open Chessie.ErrorHandling
 
-type NormalFrame =
+type Frame =
     | NotStarted
     | InProgress of int
     | Open of int * int
     | Strike
+    | LastStrikeInProgress1
+    | LastStrikeInProgress2 of int
+    | LastStrike of int * int
     | Spare of int
-    
-type LastFrame =
-    | NotStarted
-    | InProgress of int
-    | Open of int * int
-    | StrikeInProgress1
-    | StrikeInProgress2 of int
-    | Strike of int * int
-    | SpareInProgress of int
-    | Spare of int * int
-
-type Frame =
-    | Normal of NormalFrame
-    | Last of LastFrame
+    | LastSpareInProgress of int
+    | LastSpare of int * int
 
 module Frame =
 
     let lastFrameNumber = 10
+    let numberOfPins = 10
 
     let create num =
         if num > 0 && num < lastFrameNumber then
-            NormalFrame.NotStarted |> Frame.Normal |> ok
+            NotStarted |> ok
         elif num = lastFrameNumber then
-            LastFrame.NotStarted |> Frame.Last |> ok
+            NotStarted |> ok
         else
             num |> InvalidFrameNumber |> fail
+
+    let isFinished frame =
+        match frame with
+        | Open _ | Strike | Spare _ | LastStrike _ | LastSpare _ -> true
+        | _ -> false
+
+    let private rollForNotStarted score frameNumber =
+        if score > 0 && score < numberOfPins then
+            InProgress score |> ok
+        elif score = numberOfPins then
+            if frameNumber <> lastFrameNumber
+            then Strike |> ok
+            else LastStrikeInProgress1 |> ok
+        else
+            InvalidNumberOfPinnes score |> fail
+            
+    let private rollForInProgress firstScore secondScore frameNumber =
+        let score = firstScore + secondScore
+        if score > 0 && score < numberOfPins then
+            Open (firstScore, secondScore) |> ok
+        elif score = numberOfPins then
+            if frameNumber <> lastFrameNumber
+            then Spare firstScore |> ok
+            else LastSpareInProgress firstScore |> ok
+        else
+            InvalidNumberOfPinnes score |> fail
+
+    let roll score frameNumber frame =
+        match frame with
+        | NotStarted -> rollForNotStarted score frameNumber
+        | InProgress firstScore -> rollForInProgress firstScore score frameNumber
+        | _ -> failwith "to do"
