@@ -1,8 +1,6 @@
 ﻿[<AutoOpen>]
 module FsBowling.DSL
 
-open System
-
 open Chessie.ErrorHandling
 
 open Xunit
