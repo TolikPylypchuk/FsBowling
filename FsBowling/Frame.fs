@@ -2,7 +2,7 @@
 
 open Chessie.ErrorHandling
 
-type Frame =
+type FrameState =
     | NotStarted
     | InProgress of int
     | Open of int * int
@@ -14,47 +14,56 @@ type Frame =
     | LastSpareInProgress of int
     | LastSpare of int * int
 
+type Frame = {
+    State : FrameState
+    Number : int
+}
+
 module Frame =
 
     let lastFrameNumber = 10
     let numberOfPins = 10
 
     let create num =
-        if num > 0 && num < lastFrameNumber then
-            NotStarted |> ok
-        elif num = lastFrameNumber then
-            NotStarted |> ok
-        else
-            num |> InvalidFrameNumber |> fail
+        if num > 0 && num <= lastFrameNumber
+        then { State = NotStarted; Number = num } |> ok
+        else num |> InvalidFrameNumber |> fail
 
     let isFinished frame =
-        match frame with
+        match frame.State with
         | Open _ | Strike | Spare _ | LastStrike _ | LastSpare _ -> true
         | _ -> false
 
-    let private rollForNotStarted score frameNumber =
-        if score > 0 && score < numberOfPins then
-            InProgress score |> ok
-        elif score = numberOfPins then
-            if frameNumber <> lastFrameNumber
-            then Strike |> ok
-            else LastStrikeInProgress1 |> ok
-        else
-            InvalidNumberOfPinnes score |> fail
-            
-    let private rollForInProgress firstScore secondScore frameNumber =
-        let score = firstScore + secondScore
-        if score > 0 && score < numberOfPins then
-            Open (firstScore, secondScore) |> ok
-        elif score = numberOfPins then
-            if frameNumber <> lastFrameNumber
-            then Spare firstScore |> ok
-            else LastSpareInProgress firstScore |> ok
-        else
-            InvalidNumberOfPinnes score |> fail
+    let isLast frame =
+        frame.Number = lastFrameNumber
 
-    let roll score frameNumber frame =
-        match frame with
-        | NotStarted -> rollForNotStarted score frameNumber
-        | InProgress firstScore -> rollForInProgress firstScore score frameNumber
-        | _ -> failwith "to do"
+    let private rollForNotStarted score frame =
+        if score >= 0 && score < numberOfPins then
+            { frame with State = InProgress score }
+        else
+            if frame.Number <> lastFrameNumber
+            then { frame with State = Strike }
+            else { frame with State = LastStrikeInProgress1 }
+            
+    let private rollForInProgress firstScore secondScore frame =
+        let score = firstScore + secondScore
+        if score >= 0 && score < numberOfPins then
+            { frame with State = Open (firstScore, secondScore) }
+        else
+            if frame.Number <> lastFrameNumber
+            then { frame with State = Spare firstScore }
+            else { frame with State = LastSpareInProgress firstScore }
+
+    let private rollForOpen score frame =
+        { State = InProgress score; Number = frame.Number + 1 }
+
+    let roll score frame =
+        if score >= 0 && score <= numberOfPins then
+            match frame.State with
+            | NotStarted -> rollForNotStarted score frame
+            | InProgress firstScore -> rollForInProgress firstScore score frame
+            | Open _ -> rollForOpen score frame
+            | _ -> failwith "to do"
+            |> ok
+        else
+            InvalidScore score |> fail

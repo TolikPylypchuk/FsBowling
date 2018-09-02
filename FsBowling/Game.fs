@@ -11,5 +11,5 @@ module Game =
     let create players =
         players
         |> Player.validatePlayers
-        >>= (fun players -> players |> List.map (Player.create) |> Trial.sequence)
+        >>= (fun players -> players |> List.map Player.create |> Trial.sequence)
         |> Trial.lift (fun players -> { Players = players })

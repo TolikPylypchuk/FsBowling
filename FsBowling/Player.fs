@@ -12,13 +12,12 @@ type Player = {
 module Player =
     
     let create name = trial {
-        let one = 1
-        let! frame = Frame.create one
+        let! frame = Frame.create 1
         return {
             Name = name
             Frames = []
             CurrentFrame = frame
-            CurrentFrameNumber = one
+            CurrentFrameNumber = 1
         }
     }
 
