@@ -9,8 +9,10 @@ let ``Creating a player should always be successful`` () =
     let expected = {
         Name = name
         Frames = []
-        CurrentFrame = NotStarted
-        CurrentFrameNumber = 1
+        CurrentFrame = {
+            State = NotStarted
+            Number = 1
+        }
     }
 
     Player.create name |> shouldBeSuccess expected

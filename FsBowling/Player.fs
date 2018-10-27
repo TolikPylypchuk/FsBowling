@@ -6,7 +6,6 @@ type Player = {
     Name : PlayerName
     Frames : Frame list
     CurrentFrame : Frame
-    CurrentFrameNumber : int
 }
 
 module Player =
@@ -17,7 +16,6 @@ module Player =
             Name = name
             Frames = []
             CurrentFrame = frame
-            CurrentFrameNumber = 1
         }
     }
 

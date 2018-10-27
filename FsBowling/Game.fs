@@ -1,6 +1,7 @@
 ﻿namespace FsBowling
 
 open Chessie.ErrorHandling
+open State
 
 type Game = {
     Players : Player list

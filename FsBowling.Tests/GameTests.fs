@@ -11,8 +11,10 @@ let ``Creating a game should be successful when the list of players is non-empty
             {
                 Name = name
                 Frames = []
-                CurrentFrame = NotStarted
-                CurrentFrameNumber = 1
+                CurrentFrame = {
+                    State = NotStarted
+                    Number = 1
+                }
             })
     }
     
