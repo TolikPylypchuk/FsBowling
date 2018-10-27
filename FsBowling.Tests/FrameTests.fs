@@ -5,7 +5,7 @@ open Xunit
 [<Theory>]
 [<RangeData(1, 11)>]
 let ``A normal frame should be created successfully when its number is valid`` number =
-    Frame.create number |> shouldBeSuccess NotStarted
+    Frame.create number |> shouldBeSuccess { State = NotStarted; Number = number }
 
 [<Theory>]
 [<InlineData(0)>]

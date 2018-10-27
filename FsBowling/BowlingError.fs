@@ -5,5 +5,5 @@ type BowlingError =
     | PlayerNameEmpty
     | PlayerNameTooLong of string
     | PlayerListEmpty
-    | DuplicatePlayers of PlayerName list
+    | DuplicatePlayers of string list
     | InvalidScore of int

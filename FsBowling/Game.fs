@@ -1,7 +1,6 @@
 ﻿namespace FsBowling
 
 open Chessie.ErrorHandling
-open State
 
 type Game = {
     Players : Player list
@@ -9,8 +8,8 @@ type Game = {
 
 module Game =
 
-    let create players =
-        players
-        |> Player.validatePlayers
-        >>= (fun players -> players |> List.map Player.create |> Trial.sequence)
-        |> Trial.lift (fun players -> { Players = players })
+    let create playerNames =
+        playerNames
+        |> PlayerName.validatePlayerNames
+        >>= (fun playerNames -> playerNames |> List.map Player.create |> Trial.sequence)
+        |> Trial.map (fun players -> { Players = players })

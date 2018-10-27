@@ -8,9 +8,8 @@
     <Compile Include="Operators.fs" />
     <Compile Include="Trial.fs" />
     <Compile Include="State.fs" />
-    <Compile Include="PlayerName.fs" />
     <Compile Include="BowlingError.fs" />
-    <Compile Include="PlayerNameModule.fs" />
+    <Compile Include="PlayerName.fs" />
     <Compile Include="Frame.fs" />
     <Compile Include="Player.fs" />
     <Compile Include="Game.fs" />

@@ -27,4 +27,4 @@ let ``Creating a game should not be successful when the list of players is empty
 [<Fact>]
 let ``Creating a game should not be successful when there are duplicate players`` () =
     let players = [ "one"; "one"; "two"; "three"; "three" ] |> List.map PlayerName
-    players |> Game.create |> shouldBeFailure [ [ "one"; "three" ] |> List.map PlayerName |> DuplicatePlayers ]
+    players |> Game.create |> shouldBeFailure [ [ "one"; "three" ] |> DuplicatePlayers ]

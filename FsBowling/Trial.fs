@@ -1,5 +1,7 @@
 ﻿module Chessie.ErrorHandling.Trial
 
+let map = lift
+
 let rec traverse f list =
 
     let cons head tail = head :: tail
