@@ -54,16 +54,56 @@ module Frame =
             then { frame with State = Spare firstScore }
             else { frame with State = LastSpareInProgress firstScore }
 
-    let private rollForOpen score frame =
+    let private rollForFinished score frame =
         { State = InProgress score; Number = frame.Number + 1 }
+
+    let private rollForLastStrikeInProgress1 score frame =
+        { frame with State = LastStrikeInProgress2 score }
+        
+    let private rollForLastStrikeInProgress2 firstScore secondScore frame =
+        { frame with State = LastStrike (firstScore, secondScore) }
 
     let roll score frame =
         if score >= 0 && score <= numberOfPins then
-            match frame.State with
-            | NotStarted -> rollForNotStarted score frame
-            | InProgress firstScore -> rollForInProgress firstScore score frame
-            | Open _ -> rollForOpen score frame
-            | _ -> failwith "to do"
-            |> ok
+            let rollFun =
+                match frame.State with
+                | NotStarted -> rollForNotStarted |> ok
+                | InProgress firstScore -> rollForInProgress firstScore |> ok
+                | Open _ | Strike | Spare _ when frame.Number < lastFrameNumber -> rollForFinished |> ok
+                | LastStrikeInProgress1 -> rollForLastStrikeInProgress1 |> ok
+                | LastStrikeInProgress2 fisrtScore -> rollForLastStrikeInProgress2 fisrtScore |> ok
+                | _ -> RollAfterLastFrame |> fail
+
+            rollFun |> Trial.map (fun rollFun -> rollFun score frame)
         else
             InvalidScore score |> fail
+
+    let getScores frames = frames |> Seq.collect (fun frame -> seq {
+        match frame.State with
+        | NotStarted ->
+            yield! Seq.empty
+        | InProgress score ->
+            yield score
+        | Open (firstScore, secondScore) ->
+            yield firstScore
+            yield secondScore
+        | Strike | LastStrikeInProgress1 ->
+            yield numberOfPins
+        | LastStrikeInProgress2 score ->
+            yield numberOfPins
+            yield score
+        | LastStrike (firstScore, secondScore) ->
+            yield numberOfPins
+            yield firstScore
+            yield secondScore
+        | Spare score ->
+            yield score
+            yield (numberOfPins - score)
+        | LastSpareInProgress score ->
+            yield score
+            yield (numberOfPins - score)
+        | LastSpare (firstScore, secondScore) ->
+            yield firstScore
+            yield (numberOfPins - firstScore)
+            yield secondScore
+    })

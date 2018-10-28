@@ -7,3 +7,4 @@ type BowlingError =
     | PlayerListEmpty
     | DuplicatePlayers of string list
     | InvalidScore of int
+    | RollAfterLastFrame

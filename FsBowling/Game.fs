@@ -10,6 +10,6 @@ module Game =
 
     let create playerNames =
         playerNames
-        |> PlayerName.validatePlayerNames
-        >>= (fun playerNames -> playerNames |> List.map Player.create |> Trial.sequence)
+        |> List.map Player.create
+        |> Trial.sequence
         |> Trial.map (fun players -> { Players = players })
