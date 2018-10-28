@@ -4,12 +4,11 @@ open Xunit
 open FsUnit.Xunit
 open Chessie.ErrorHandling
 
-let createPlayers players =
-    players |> List.map PlayerName.create |> Trial.sequence >>= PlayerName.validatePlayerNames
+open PlayerName
 
 [<Fact>]
 let ``Creating a game should be successful when the list of players is non-empty and when there are no duplications`` () =
-    let playerNames = createPlayers [ "one"; "two"; "three" ]
+    let playerNames = createPlayerNames [ "one"; "two"; "three" ]
     
     let expected = trial {
         let! names = playerNames
@@ -27,13 +26,13 @@ let ``Creating a game should be successful when the list of players is non-empty
     }
     
     playerNames >>= Game.create |> should equal expected
-    
+
 [<Fact>]
 let ``Creating a game should not be successful when the list of players is empty`` () =
-    createPlayers [] >>= Game.create |> shouldBeFailure [ PlayerListEmpty ]
+    createPlayerNames [] >>= Game.create |> shouldBeFailure [ PlayerListEmpty ]
         
 [<Fact>]
 let ``Creating a game should not be successful when there are duplicate players`` () =
-    createPlayers [ "one"; "one"; "two"; "three"; "three" ]
+    createPlayerNames [ "one"; "one"; "two"; "three"; "three" ]
     >>= Game.create
     |> shouldBeFailure [ [ "one"; "three" ] |> DuplicatePlayers ]

@@ -33,3 +33,6 @@ module PlayerName =
             if duplicatePlayers |> List.isEmpty
             then players |> ok
             else duplicatePlayers |> List.map getName |> DuplicatePlayers |> fail
+
+    let createPlayerNames =
+        List.map create >> Trial.sequence >=> validatePlayerNames
