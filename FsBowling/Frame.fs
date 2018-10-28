@@ -133,122 +133,63 @@ module Frame =
 
     let getTotal frameScores =
         frameScores |> List.tryLast |> Trial.failIfNone InvalidFrameScores |> Trial.map (fun score -> score.Total)
-
-    let private getTotalScoresForInProgress score frameScores =
-        frameScores
-        |> getTotal
-        |> Trial.map (fun total ->
-            frameScores |> List.append [ { frameScore with Total = total + score; FirstRoll = score } ])
-
-    let private getTotalScoresForOpen firstScore secondScore frameScores =
-        frameScores
-        |> getTotal
-        |> Trial.map (fun total ->
-            frameScores
-            |> List.append [ { frameScore with
-                                Total = total + firstScore + secondScore
-                                FirstRoll = firstScore; SecondRoll = secondScore } ])
-
-    let private getTotalScoresForStrike otherFrames frameScores =
-        frameScores
-        |> getTotal
-        |> Trial.map (fun total -> (total, otherFrames |> getScores |> Seq.take 2 |> Seq.reduce (+)))
-        |> Trial.map (fun (total, additional) ->
-            frameScores
-            |> List.append [ { frameScore with
-                                Total = total + numberOfPins + additional
-                                FirstRoll = numberOfPins } ])
-
-    let private getTotalScoresForSpare otherFrames score frameScores =
-        frameScores
-        |> getTotal
-        |> Trial.map (fun total -> (total, otherFrames |> getScores |> Seq.head))
-        |> Trial.map (fun (total, additional) ->
-            frameScores
-            |> List.append [ { frameScore with
-                                Total = total + numberOfPins + additional
-                                FirstRoll = score
-                                SecondRoll = numberOfPins - score } ])
-
-    let private getTotalScoresForLastStrikeInProgress1 frameScores =
-        frameScores
-        |> getTotal
-        |> Trial.map (fun total ->
-            frameScores
-            |> List.append [ { frameScore with
-                                Total = total + numberOfPins
-                                FirstRoll = numberOfPins } ])
-
-    let private getTotalScoresForLastStrikeInProgress2 score frameScores =
-        frameScores
-        |> getTotal
-        |> Trial.map (fun total ->
-            frameScores
-            |> List.append [ { frameScore with
-                                Total = total + numberOfPins + score
-                                FirstRoll = numberOfPins
-                                SecondRoll = score } ])
-
-    let private getTotalScoresForLastStrike firstScore secondScore frameScores =
-        frameScores
-        |> getTotal
-        |> Trial.map (fun total ->
-            frameScores
-            |> List.append [ { frameScore with
-                                Total = total + numberOfPins + firstScore + secondScore
-                                FirstRoll = numberOfPins
-                                SecondRoll = firstScore
-                                ThirdRoll = secondScore } ])
-
-    let private getTotalScoresForLastSpareInProgress score frameScores =
-        frameScores
-        |> getTotal
-        |> Trial.map (fun total ->
-            frameScores
-            |> List.append [ { frameScore with
-                                Total = total + numberOfPins
-                                FirstRoll = score
-                                SecondRoll = numberOfPins - score } ])
-
-    let private getTotalScoresForLastSpare firstScore secondScore frameScores =
-        frameScores
-        |> getTotal
-        |> Trial.map (fun total ->
-            frameScores
-            |> List.append [ { frameScore with
-                                Total = total + numberOfPins + secondScore
-                                FirstRoll = firstScore
-                                SecondRoll = numberOfPins - firstScore
-                                ThirdRoll = secondScore } ])
+    
+    let private add item list =
+        list |> List.append [ item ]
 
     let getTotalScores frames =
-        let rec getTotalScores' frames frameScores =
+        let rec getTotalScores' frames (frameScores : FrameScore list) =
             match frames with
             | [] -> frameScores |> ok
-            | frame :: otherFrames ->
-                let getTotalScores =
+            | frame :: otherFrames -> trial {
+                let! total = frameScores |> getTotal
+                let score =
                     match frame.State with
                     | NotStarted ->
-                        ok
+                        frameScore
                     | InProgress score ->
-                        getTotalScoresForInProgress score
+                        { frameScore with Total = total + score; FirstRoll = score }
                     | Open (firstScore, secondScore) ->
-                        getTotalScoresForOpen firstScore secondScore
+                        { frameScore with
+                            Total = total + firstScore + secondScore
+                            FirstRoll = firstScore; SecondRoll = secondScore }
                     | Strike ->
-                        getTotalScoresForStrike otherFrames
+                        { frameScore with
+                            Total = total + numberOfPins + (otherFrames |> getScores |> Seq.take 2 |> Seq.fold (+) 0)
+                            FirstRoll = numberOfPins }
                     | Spare score ->
-                        getTotalScoresForSpare otherFrames score
+                        { frameScore with
+                            Total = total + numberOfPins + (otherFrames |> getScores |> Seq.take 1 |> Seq.fold (+) 0)
+                            FirstRoll = score
+                            SecondRoll = numberOfPins - score }
                     | LastStrikeInProgress1 ->
-                        getTotalScoresForLastStrikeInProgress1
+                        { frameScore with
+                            Total = total + numberOfPins
+                            FirstRoll = numberOfPins }
                     | LastStrikeInProgress2 score ->
-                        getTotalScoresForLastStrikeInProgress2 score
+                        { frameScore with
+                            Total = total + numberOfPins + score
+                            FirstRoll = numberOfPins
+                            SecondRoll = score }
                     | LastStrike (firstScore, secondScore) ->
-                        getTotalScoresForLastStrike firstScore secondScore
+                        { frameScore with
+                            Total = total + numberOfPins + firstScore + secondScore
+                            FirstRoll = numberOfPins
+                            SecondRoll = firstScore
+                            ThirdRoll = secondScore }
                     | LastSpareInProgress score ->
-                        getTotalScoresForLastSpareInProgress score
+                        { frameScore with
+                            Total = total + numberOfPins
+                            FirstRoll = score
+                            SecondRoll = numberOfPins - score }
                     | LastSpare (firstScore, secondScore) ->
-                        getTotalScoresForLastSpare firstScore secondScore
+                        { frameScore with
+                            Total = total + numberOfPins + secondScore
+                            FirstRoll = firstScore
+                            SecondRoll = numberOfPins - firstScore
+                            ThirdRoll = secondScore }
 
-                getTotalScores frameScores >>= getTotalScores' otherFrames
+                return! getTotalScores' otherFrames (frameScores |> add score)
+            }
 
         getTotalScores' frames []
