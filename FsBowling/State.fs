@@ -3,13 +3,15 @@
 type State<'s, 'a> = State of ('s -> ('a * 's))
 
 module State =
-    let inline run state x = let (State(f)) = x in f state
+    let inline run state (State f) = f state
 
-    let get = State(fun s -> s, s)
+    let get = State (fun s -> s, s)
 
-    let put newState = State(fun _ -> (), newState)
+    let put newState = State (fun _ -> (), newState)
 
-    let map f s = State(fun (state: 's) ->
+    let update f = State (fun s -> (), f s)
+
+    let map f s = State (fun (state : 's) ->
         let x, state = run state s
         f x, state)
 

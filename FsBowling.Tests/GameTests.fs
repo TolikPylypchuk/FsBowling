@@ -16,11 +16,10 @@ let ``Creating a game should be successful when the list of players is non-empty
             Players = names |> List.map (fun name ->
                 {
                     Name = name
-                    Frames = []
-                    CurrentFrame = {
+                    Frames = [ {
                         State = NotStarted
                         Number = 1
-                    }
+                    } ]
                 })
         }
     }

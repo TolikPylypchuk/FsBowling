@@ -5,7 +5,6 @@ open Chessie.ErrorHandling
 type Player = {
     Name : PlayerName
     Frames : Frame list
-    CurrentFrame : Frame
 }
 
 module Player =
@@ -14,7 +13,6 @@ module Player =
         let! frame = Frame.create 1
         return {
             Name = name
-            Frames = []
-            CurrentFrame = frame
+            Frames = [ frame ]
         }
     }

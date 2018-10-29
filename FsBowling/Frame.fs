@@ -35,7 +35,7 @@ module Frame =
         Total = 0
         FirstRoll = 0
         SecondRoll = 0
-        ThirdRoll = 0
+        ThirdRoll = -1
     }
 
     let create num =
@@ -132,7 +132,7 @@ module Frame =
         })
 
     let getTotal frameScores =
-        frameScores |> List.tryLast |> Trial.failIfNone InvalidFrameScores |> Trial.map (fun score -> score.Total)
+        frameScores |> List.tryLast |> Option.map (fun score -> score.Total) |> Option.defaultValue 0 
     
     let private add item list =
         list |> List.append [ item ]
@@ -140,9 +140,9 @@ module Frame =
     let getTotalScores frames =
         let rec getTotalScores' frames (frameScores : FrameScore list) =
             match frames with
-            | [] -> frameScores |> ok
-            | frame :: otherFrames -> trial {
-                let! total = frameScores |> getTotal
+            | [] -> frameScores
+            | frame :: otherFrames ->
+                let total = frameScores |> getTotal
                 let score =
                     match frame.State with
                     | NotStarted ->
@@ -189,7 +189,6 @@ module Frame =
                             SecondRoll = numberOfPins - firstScore
                             ThirdRoll = secondScore }
 
-                return! getTotalScores' otherFrames (frameScores |> add score)
-            }
+                getTotalScores' otherFrames (frameScores |> add score)
 
         getTotalScores' frames []
