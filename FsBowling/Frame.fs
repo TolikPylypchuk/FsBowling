@@ -33,8 +33,8 @@ module Frame =
 
     let private frameScore = {
         Total = 0
-        FirstRoll = 0
-        SecondRoll = 0
+        FirstRoll = -1
+        SecondRoll = -1
         ThirdRoll = -1
     }
 

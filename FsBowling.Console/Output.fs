@@ -11,9 +11,12 @@ let formatRoll score =
 let formatScore score =
     state {
         let firstPart =
-            if score.FirstRoll = numberOfPins
-            then "X "
-            else score.FirstRoll |> formatRoll
+            if score.FirstRoll = numberOfPins then
+                "X "
+            elif score.FirstRoll = -1 then
+                "  "
+            else
+                score.FirstRoll |> formatRoll
 
         do! update <| append "|"
         do! update <| append firstPart
@@ -25,6 +28,8 @@ let formatScore score =
                 "  "
             elif score.FirstRoll + score.SecondRoll = numberOfPins then
                 "/ "
+            elif score.SecondRoll = -1 then
+                "  "
             else
                 score.SecondRoll |> formatRoll
 
@@ -45,7 +50,7 @@ let formatScore score =
 
 let formatPlayer player =
     state {
-        let scores = player.Frames |> Frame.getTotalScores
+        let totalScores = player.Frames |> Frame.getTotalScores
 
         let (PlayerName name) = player.Name
         do! update <| append name
@@ -54,7 +59,7 @@ let formatPlayer player =
         let reduceWithPipe = List.reduce (fun acc score -> acc + "|" + score)
 
         let firstLine =
-            scores
+            totalScores
             |> List.map (fun score -> score.Total.ToString().PadRight(5))
             |> reduceWithPipe
 
@@ -71,7 +76,7 @@ let formatPlayer player =
         do! update <| append "\n"
 
         let thirdLine =
-            scores
+            totalScores
             |> List.map formatScore
             |> reduceWithPipe
 
