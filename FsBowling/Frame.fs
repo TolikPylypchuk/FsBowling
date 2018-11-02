@@ -21,9 +21,9 @@ type Frame = {
 
 type FrameScore = {
     Total : int
-    FirstRoll : int
-    SecondRoll : int
-    ThirdRoll : int
+    FirstRoll : int option
+    SecondRoll : int option
+    ThirdRoll : int option
 }
 
 module Frame =
@@ -33,9 +33,9 @@ module Frame =
 
     let private frameScore = {
         Total = 0
-        FirstRoll = -1
-        SecondRoll = -1
-        ThirdRoll = -1
+        FirstRoll = None
+        SecondRoll = None
+        ThirdRoll = None
     }
 
     let create num =
@@ -148,46 +148,46 @@ module Frame =
                     | NotStarted ->
                         frameScore
                     | InProgress score ->
-                        { frameScore with Total = total + score; FirstRoll = score }
+                        { frameScore with Total = total + score; FirstRoll = Some score }
                     | Open (firstScore, secondScore) ->
                         { frameScore with
                             Total = total + firstScore + secondScore
-                            FirstRoll = firstScore; SecondRoll = secondScore }
+                            FirstRoll = Some firstScore; SecondRoll = Some secondScore }
                     | Strike ->
                         { frameScore with
                             Total = total + numberOfPins + (otherFrames |> getScores |> Seq.take 2 |> Seq.fold (+) 0)
-                            FirstRoll = numberOfPins }
+                            FirstRoll = Some numberOfPins }
                     | Spare score ->
                         { frameScore with
                             Total = total + numberOfPins + (otherFrames |> getScores |> Seq.take 1 |> Seq.fold (+) 0)
-                            FirstRoll = score
-                            SecondRoll = numberOfPins - score }
+                            FirstRoll = Some score
+                            SecondRoll = Some <| numberOfPins - score }
                     | LastStrikeInProgress1 ->
                         { frameScore with
                             Total = total + numberOfPins
-                            FirstRoll = numberOfPins }
+                            FirstRoll = Some numberOfPins }
                     | LastStrikeInProgress2 score ->
                         { frameScore with
                             Total = total + numberOfPins + score
-                            FirstRoll = numberOfPins
-                            SecondRoll = score }
+                            FirstRoll = Some numberOfPins
+                            SecondRoll = Some score }
                     | LastStrike (firstScore, secondScore) ->
                         { frameScore with
                             Total = total + numberOfPins + firstScore + secondScore
-                            FirstRoll = numberOfPins
-                            SecondRoll = firstScore
-                            ThirdRoll = secondScore }
+                            FirstRoll = Some numberOfPins
+                            SecondRoll = Some firstScore
+                            ThirdRoll = Some secondScore }
                     | LastSpareInProgress score ->
                         { frameScore with
                             Total = total + numberOfPins
-                            FirstRoll = score
-                            SecondRoll = numberOfPins - score }
+                            FirstRoll = Some score
+                            SecondRoll = Some <| numberOfPins - score }
                     | LastSpare (firstScore, secondScore) ->
                         { frameScore with
                             Total = total + numberOfPins + secondScore
-                            FirstRoll = firstScore
-                            SecondRoll = numberOfPins - firstScore
-                            ThirdRoll = secondScore }
+                            FirstRoll = Some firstScore
+                            SecondRoll = Some <| numberOfPins - firstScore
+                            ThirdRoll = Some secondScore }
 
                 getTotalScores' otherFrames (frameScores |> add score)
 

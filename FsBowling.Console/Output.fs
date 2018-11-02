@@ -11,40 +11,31 @@ let formatRoll score =
 let formatScore score =
     state {
         let firstPart =
-            if score.FirstRoll = numberOfPins then
-                "X "
-            elif score.FirstRoll = -1 then
-                "  "
-            else
-                score.FirstRoll |> formatRoll
+            match score.FirstRoll with
+            | Some roll when roll = numberOfPins -> "X "
+            | Some roll -> roll |> formatRoll
+            | None -> "  "
 
         do! update <| append "|"
         do! update <| append firstPart
 
         let secondPart =
-            if score.SecondRoll = numberOfPins then
-                "X "
-            elif score.FirstRoll = numberOfPins then
-                "  "
-            elif score.FirstRoll + score.SecondRoll = numberOfPins then
-                "/ "
-            elif score.SecondRoll = -1 then
-                "  "
-            else
-                score.SecondRoll |> formatRoll
+            match score.FirstRoll, score.SecondRoll with
+            | Some roll1, Some roll2 when roll1 + roll2 = numberOfPins -> "/ "
+            | Some roll1, Some roll2 when roll1 = numberOfPins && roll2 = numberOfPins -> "X "
+            | _, Some roll -> roll |> formatRoll
+            | _, None -> "  "
 
         do! update <| append "|"
         do! update <| append secondPart
         do! update <| append "|"
 
-        if score.ThirdRoll > -1 then
-            let thirdPart =
-                if score.ThirdRoll = numberOfPins
-                then "X "
-                else score.ThirdRoll |> formatRoll
-
+        match score.ThirdRoll with
+        | Some roll ->
+            let thirdPart = if roll = numberOfPins then "X " else roll |> formatRoll
             do! update <| append thirdPart
             do! update <| append "|"
+        | None -> ()
 
     } |> run "" |> snd
 
