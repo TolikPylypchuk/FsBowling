@@ -21,20 +21,20 @@ type StateBuilder() =
 
     member __.Return x = State(fun s -> x, s)
 
-    member inline __.ReturnFrom (x: State<'s, 'a>) = x
+    member inline __.ReturnFrom (x : State<'s, 'a>) = x
 
     member __.Bind (x, f) : State<'s, 'b> =
         State(fun state ->
             let result, state = State.run state x
             State.run state (f result))
 
-    member __.Combine (x1: State<'s, 'a>, x2: State<'s, 'b>) =
+    member __.Combine (x1 : State<'s, 'a>, x2 : State<'s, 'b>) =
         State(fun state ->
             let _, state = State.run state x1
             State.run state x2)
     member __.Delay f : State<'s, 'a> = f ()
 
-    member this.For (seq, (f: 'a -> State<'s, 'b>)) =
+    member this.For (seq, (f : 'a -> State<'s, 'b>)) =
         seq
         |> Seq.map f
         |> Seq.reduceBack (fun x1 x2 -> this.Combine (x1, x2))
