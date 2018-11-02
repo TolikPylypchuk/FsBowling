@@ -16,3 +16,21 @@ module Player =
             Frames = [ frame ]
         }
     }
+
+    let roll score player = trial {
+        let reversedFrames = player.Frames |> List.rev
+        let! frame = reversedFrames |> List.head |> Frame.roll score
+        let frames = frame :: (reversedFrames |> List.tail)
+        let result =
+            if frame |> Frame.isFinished
+            then { State = NotStarted; Number = frame.Number + 1 } :: frames
+            else frames
+            |> List.rev
+        
+        return { player with Frames = result }
+    }
+
+    let getLastFrameNumber player =
+        player.Frames
+        |> List.last
+        |> fun frame -> frame.Number

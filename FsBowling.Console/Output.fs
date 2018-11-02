@@ -1,9 +1,11 @@
 ﻿module FsBowling.Output
 
+open System
+
 open State
 open Frame
 
-let append (suffix : string) str = (str + suffix)
+let append (suffix : string) str = str + suffix
 
 let formatRoll score =
     if score = 0 then "- " else score.ToString().PadRight(2)
@@ -16,7 +18,6 @@ let formatScore score =
             | Some roll -> roll |> formatRoll
             | None -> "  "
 
-        do! update <| append "|"
         do! update <| append firstPart
 
         let secondPart =
@@ -28,13 +29,12 @@ let formatScore score =
 
         do! update <| append "|"
         do! update <| append secondPart
-        do! update <| append "|"
 
         match score.ThirdRoll with
         | Some roll ->
             let thirdPart = if roll = numberOfPins then "X " else roll |> formatRoll
-            do! update <| append thirdPart
             do! update <| append "|"
+            do! update <| append thirdPart
         | None -> ()
 
     } |> run "" |> snd
@@ -51,7 +51,11 @@ let formatPlayer player =
 
         let firstLine =
             totalScores
-            |> List.map (fun score -> score.Total.ToString().PadRight(5))
+            |> List.map (fun score ->
+                score.Total
+                |> Option.map string
+                |> Option.defaultValue String.Empty
+                |> fun score -> score.PadRight(5))
             |> reduceWithPipe
 
         let intermediateLine = String.replicate (firstLine.Length + 2) "-"
@@ -66,13 +70,14 @@ let formatPlayer player =
         do! update <| append intermediateLine
         do! update <| append "\n"
 
-        let thirdLine =
+        let secondLine =
             totalScores
             |> List.map formatScore
             |> reduceWithPipe
 
-        do! update <| append thirdLine
-        do! update <| append "\n"
+        do! update <| append "|"
+        do! update <| append secondLine
+        do! update <| append "|\n"
 
         do! update <| append intermediateLine
         do! update <| append "\n"

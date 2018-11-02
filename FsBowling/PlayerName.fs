@@ -11,7 +11,7 @@ module PlayerName =
     
     let getName (PlayerName name) = name
 
-    let create (name : string) =
+    let private create (name : string) =
         let name = name.Trim()
         if name = String.Empty then
             PlayerNameEmpty |> fail
@@ -20,7 +20,7 @@ module PlayerName =
         else
             PlayerName name |> ok
 
-    let validatePlayerNames players =
+    let private validatePlayerNames players =
         if players |> List.isEmpty then
             PlayerListEmpty |> fail
         else

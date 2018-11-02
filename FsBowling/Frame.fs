@@ -20,7 +20,7 @@ type Frame = {
 }
 
 type FrameScore = {
-    Total : int
+    Total : int option
     FirstRoll : int option
     SecondRoll : int option
     ThirdRoll : int option
@@ -32,7 +32,7 @@ module Frame =
     let numberOfPins = 10
 
     let private frameScore = {
-        Total = 0
+        Total = None
         FirstRoll = None
         SecondRoll = None
         ThirdRoll = None
@@ -132,7 +132,7 @@ module Frame =
         })
 
     let getTotal frameScores =
-        frameScores |> List.tryLast |> Option.map (fun score -> score.Total) |> Option.defaultValue 0 
+        frameScores |> List.tryLast |> Option.map (fun score -> score.Total |> Option.defaultValue 0)
     
     let private add item list =
         list |> List.append [ item ]
@@ -140,54 +140,54 @@ module Frame =
     let getTotalScores frames =
         let rec getTotalScores' frames (frameScores : FrameScore list) =
             match frames with
-            | [] -> frameScores
+            | [] -> frameScores |> List.rev
             | frame :: otherFrames ->
-                let total = frameScores |> getTotal
+                let total = frameScores |> getTotal |> Option.defaultValue 0
                 let score =
                     match frame.State with
                     | NotStarted ->
                         frameScore
                     | InProgress score ->
-                        { frameScore with Total = total + score; FirstRoll = Some score }
+                        { frameScore with Total = total + score |> Some; FirstRoll = score |> Some }
                     | Open (firstScore, secondScore) ->
                         { frameScore with
-                            Total = total + firstScore + secondScore
-                            FirstRoll = Some firstScore; SecondRoll = Some secondScore }
+                            Total = total + firstScore + secondScore |> Some
+                            FirstRoll = Some firstScore; SecondRoll = secondScore |> Some }
                     | Strike ->
                         { frameScore with
-                            Total = total + numberOfPins + (otherFrames |> getScores |> Seq.take 2 |> Seq.fold (+) 0)
-                            FirstRoll = Some numberOfPins }
+                            Total = total + numberOfPins + (otherFrames |> getScores |> Seq.truncate 2 |> Seq.fold (+) 0) |> Some
+                            FirstRoll = numberOfPins |> Some }
                     | Spare score ->
                         { frameScore with
-                            Total = total + numberOfPins + (otherFrames |> getScores |> Seq.take 1 |> Seq.fold (+) 0)
-                            FirstRoll = Some score
-                            SecondRoll = Some <| numberOfPins - score }
+                            Total = total + numberOfPins + (otherFrames |> getScores |> Seq.truncate 1 |> Seq.fold (+) 0) |> Some
+                            FirstRoll = score |> Some
+                            SecondRoll = numberOfPins - score |> Some }
                     | LastStrikeInProgress1 ->
                         { frameScore with
-                            Total = total + numberOfPins
-                            FirstRoll = Some numberOfPins }
+                            Total = total + numberOfPins |> Some
+                            FirstRoll = numberOfPins |> Some }
                     | LastStrikeInProgress2 score ->
                         { frameScore with
-                            Total = total + numberOfPins + score
-                            FirstRoll = Some numberOfPins
-                            SecondRoll = Some score }
+                            Total = total + numberOfPins + score |> Some
+                            FirstRoll = numberOfPins |> Some
+                            SecondRoll = score |> Some }
                     | LastStrike (firstScore, secondScore) ->
                         { frameScore with
-                            Total = total + numberOfPins + firstScore + secondScore
-                            FirstRoll = Some numberOfPins
-                            SecondRoll = Some firstScore
-                            ThirdRoll = Some secondScore }
+                            Total = total + numberOfPins + firstScore + secondScore |> Some
+                            FirstRoll = numberOfPins |> Some
+                            SecondRoll = firstScore |> Some
+                            ThirdRoll = secondScore |> Some }
                     | LastSpareInProgress score ->
                         { frameScore with
-                            Total = total + numberOfPins
-                            FirstRoll = Some score
-                            SecondRoll = Some <| numberOfPins - score }
+                            Total = total + numberOfPins |> Some
+                            FirstRoll = score |> Some
+                            SecondRoll = numberOfPins - score |> Some }
                     | LastSpare (firstScore, secondScore) ->
                         { frameScore with
-                            Total = total + numberOfPins + secondScore
-                            FirstRoll = Some firstScore
-                            SecondRoll = Some <| numberOfPins - firstScore
-                            ThirdRoll = Some secondScore }
+                            Total = total + numberOfPins + secondScore |> Some
+                            FirstRoll = firstScore |> Some
+                            SecondRoll = numberOfPins - firstScore |> Some
+                            ThirdRoll = secondScore |> Some }
 
                 getTotalScores' otherFrames (frameScores |> add score)
 
