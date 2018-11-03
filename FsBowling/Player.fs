@@ -22,7 +22,7 @@ module Player =
         let! frame = reversedFrames |> List.head |> Frame.roll score
         let frames = frame :: (reversedFrames |> List.tail)
         let result =
-            if frame |> Frame.isFinished
+            if frame |> Frame.isFinished && frame.Number <> Frame.lastFrameNumber
             then { State = NotStarted; Number = frame.Number + 1 } :: frames
             else frames
             |> List.rev

@@ -18,14 +18,14 @@ let ``Creating a player should always be successful`` () =
 
 [<Fact>]
 let ``A list of players should be valid when it's non-empty and when there are no duplications`` () =
-    let players = [ "one"; "two"; "three" ] |> List.map PlayerName
-    players |> PlayerName.validatePlayerNames |> shouldBeSuccess players
+    let players = [ "one"; "two"; "three" ]
+    players |> PlayerName.createPlayerNames |> shouldBeSuccess (players |> List.map PlayerName)
     
 [<Fact>]
 let ``A list of players should not be valid when it's empty`` () =
-    [] |> PlayerName.validatePlayerNames |> shouldBeFailure [ PlayerListEmpty ]
+    [] |> PlayerName.createPlayerNames |> shouldBeFailure [ PlayerListEmpty ]
         
 [<Fact>]
 let ``A list of players should not be valid when there are duplications`` () =
-    let players = [ "one"; "one"; "two"; "three"; "three" ] |> List.map PlayerName
-    players |> PlayerName.validatePlayerNames |> shouldBeFailure [ [ "one"; "three" ] |> DuplicatePlayers ]
+    let players = [ "one"; "one"; "two"; "three"; "three" ]
+    players |> PlayerName.createPlayerNames |> shouldBeFailure [ [ "one"; "three" ] |> DuplicatePlayers ]

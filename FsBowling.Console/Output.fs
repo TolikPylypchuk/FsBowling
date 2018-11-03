@@ -10,7 +10,7 @@ let append (suffix : string) str = str + suffix
 let formatRoll score =
     if score = 0 then "- " else score.ToString().PadRight(2)
 
-let formatScore score =
+let formatScore isLastFrame score =
     state {
         let firstPart =
             match score.FirstRoll with
@@ -30,12 +30,14 @@ let formatScore score =
         do! update <| append "|"
         do! update <| append secondPart
 
-        match score.ThirdRoll with
-        | Some roll ->
-            let thirdPart = if roll = numberOfPins then "X " else roll |> formatRoll
-            do! update <| append "|"
-            do! update <| append thirdPart
-        | None -> ()
+        if isLastFrame then
+            match score.ThirdRoll with
+            | Some roll ->
+                let thirdPart = if roll = numberOfPins then "X " else roll |> formatRoll
+                do! update <| append "|"
+                do! update <| append thirdPart
+            | None ->
+                do! update <| append "|  "
 
     } |> run "" |> snd
 
@@ -51,11 +53,11 @@ let formatPlayer player =
 
         let firstLine =
             totalScores
-            |> List.map (fun score ->
+            |> List.mapi (fun index score ->
                 score.Total
                 |> Option.map string
                 |> Option.defaultValue String.Empty
-                |> fun score -> score.PadRight(5))
+                |> fun score -> score.PadRight(if index + 1 = Frame.lastFrameNumber then 8 else 5))
             |> reduceWithPipe
 
         let intermediateLine = String.replicate (firstLine.Length + 2) "-"
@@ -72,7 +74,7 @@ let formatPlayer player =
 
         let secondLine =
             totalScores
-            |> List.map formatScore
+            |> List.mapi (fun index -> formatScore (index + 1 = Frame.lastFrameNumber))
             |> reduceWithPipe
 
         do! update <| append "|"

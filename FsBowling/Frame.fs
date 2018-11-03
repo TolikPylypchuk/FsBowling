@@ -76,6 +76,9 @@ module Frame =
         
     let private rollForLastStrikeInProgress2 firstScore secondScore frame =
         { frame with State = LastStrike (firstScore, secondScore) }
+        
+    let private rollForLastSpareInProgress firstScore secondScore frame =
+        { frame with State = LastSpare (firstScore, secondScore) }
 
     let roll score frame =
         if score >= 0 && score <= numberOfPins then
@@ -84,7 +87,10 @@ module Frame =
                 | NotStarted ->
                     rollForNotStarted |> ok
                 | InProgress firstScore ->
-                    rollForInProgress firstScore |> ok
+                    let totalScore = score + firstScore
+                    if totalScore <= numberOfPins
+                    then rollForInProgress firstScore |> ok
+                    else InvalidScore totalScore |> fail
                 | Open _ when frame.Number < lastFrameNumber ->
                     rollForFinished |> ok
                 | Strike | Spare _ ->
@@ -93,6 +99,8 @@ module Frame =
                     rollForLastStrikeInProgress1 |> ok
                 | LastStrikeInProgress2 score ->
                     rollForLastStrikeInProgress2 score |> ok
+                | LastSpareInProgress firstScore ->
+                    rollForLastSpareInProgress firstScore |> ok
                 | _ ->
                     RollAfterLastFrame |> fail
 
@@ -132,7 +140,7 @@ module Frame =
         })
 
     let getTotal frameScores =
-        frameScores |> List.tryLast |> Option.map (fun score -> score.Total |> Option.defaultValue 0)
+        frameScores |> List.tryHead |> Option.map (fun score -> score.Total |> Option.defaultValue 0)
     
     let private add item list =
         list |> List.append [ item ]
@@ -159,7 +167,7 @@ module Frame =
                             FirstRoll = numberOfPins |> Some }
                     | Spare score ->
                         { frameScore with
-                            Total = total + numberOfPins + (otherFrames |> getScores |> Seq.truncate 1 |> Seq.fold (+) 0) |> Some
+                            Total = total + numberOfPins + (otherFrames |> getScores |> Seq.tryHead |> Option.defaultValue 0) |> Some
                             FirstRoll = score |> Some
                             SecondRoll = numberOfPins - score |> Some }
                     | LastStrikeInProgress1 ->
