@@ -34,3 +34,8 @@ module Player =
         player.Frames
         |> List.last
         |> fun frame -> frame.Number
+
+    let isFinished player =
+        player.Frames
+        |> List.last
+        |> fun frame -> frame.Number = Frame.lastFrameNumber && frame |> Frame.isFinished

@@ -2,39 +2,34 @@
 
 open Chessie.ErrorHandling
 
-open PlayerName
-open Game
+open Input
+open Output
+
+let rec createGame () =
+    match inputPlayers () |> Game.create with
+    | Ok (game, _) -> game
+    | Bad errors ->
+        errors |> Output.printErrors
+        createGame ()
+
+let rec playGame game =
+    if game |> Game.isFinished then
+        ()
+    else
+        let score = inputRoll ()
+        match game |> Game.roll score with
+        | Ok (game, _) ->
+            game |> formatGame |> printfn "%s"
+            game |> playGame
+        | Bad errors ->
+            errors |> Output.printErrors
+            printfn ""
+            game |> playGame
 
 [<EntryPoint>]
 let main _ =
-    let result =
-        [ "Player 1" ]
-        |> createPlayerNames
-        >>= create
-        >>= roll 2
-        >>= roll 6
-        >>= roll 10
-        >>= roll 7
-        >>= roll 1
-        >>= roll 3
-        >>= roll 5
-        >>= roll 4
-        >>= roll 5
-        >>= roll 6
-        >>= roll 0
-        >>= roll 3
-        >>= roll 5
-        >>= roll 7
-        >>= roll 2
-        >>= roll 8
-        >>= roll 1
-        >>= roll 9
-        >>= roll 1
-        >>= roll 1
-        |> Trial.map Output.formatGame
+    printfn "Welcome to FsBowling Console!\n"
 
-    match result with
-    | Ok (result, _) -> printfn "%s" result
-    | Bad errors -> printfn "%A" errors
+    createGame () |> playGame
 
     0

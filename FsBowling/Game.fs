@@ -29,3 +29,8 @@ module Game =
             else player |> ok)
         |> Trial.sequence
         |> Trial.map (fun players -> { game with Players = players })
+
+    let isFinished game =
+        game.Players
+        |> List.last
+        |> Player.isFinished

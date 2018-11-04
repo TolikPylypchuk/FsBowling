@@ -8,4 +8,3 @@ type BowlingError =
     | DuplicatePlayers of string list
     | InvalidScore of int
     | RollAfterLastFrame
-    | InvalidFrameScores

@@ -9,9 +9,9 @@ module PlayerName =
 
     let maxNameLength = 30
     
-    let getName (PlayerName name) = name
+    let get (PlayerName name) = name
 
-    let private create (name : string) =
+    let create (name : string) =
         let name = name.Trim()
         if name = String.Empty then
             PlayerNameEmpty |> fail
@@ -20,7 +20,7 @@ module PlayerName =
         else
             PlayerName name |> ok
 
-    let private validatePlayerNames players =
+    let validatePlayerNames players =
         if players |> List.isEmpty then
             PlayerListEmpty |> fail
         else
@@ -32,7 +32,7 @@ module PlayerName =
 
             if duplicatePlayers |> List.isEmpty
             then players |> ok
-            else duplicatePlayers |> List.map getName |> DuplicatePlayers |> fail
+            else duplicatePlayers |> List.map get |> DuplicatePlayers |> fail
 
     let createPlayerNames =
         List.map create >> Trial.sequence >=> validatePlayerNames
