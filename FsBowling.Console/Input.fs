@@ -45,8 +45,9 @@ let rec inputPlayers () =
 
         inputPlayers ()
 
-let inputRoll () =
-    printf "Enter the next roll's score: "
+let inputRoll game =
+    let (PlayerName currentPlayerName) = (game |> Game.currentPlayer).Name
+    printf "%s rolls with score: " currentPlayerName
 
     let rec inputRoll' () =
         let success, score = Console.ReadLine() |> Int32.TryParse

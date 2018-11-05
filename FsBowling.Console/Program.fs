@@ -12,24 +12,23 @@ let rec createGame () =
         errors |> Output.printErrors
         createGame ()
 
-let rec playGame game =
+let rec play game =
     if game |> Game.isFinished then
         ()
     else
-        let score = inputRoll ()
+        let score = game |> inputRoll
         match game |> Game.roll score with
         | Ok (game, _) ->
             game |> formatGame |> printfn "%s"
-            game |> playGame
+            game |> play
         | Bad errors ->
             errors |> Output.printErrors
             printfn ""
-            game |> playGame
+            game |> play
 
 [<EntryPoint>]
 let main _ =
     printfn "Welcome to FsBowling Console!\n"
-
-    createGame () |> playGame
-
+    |> createGame
+    |> play
     0

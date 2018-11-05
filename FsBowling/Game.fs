@@ -14,29 +14,22 @@ module Game =
         |> Trial.sequence
         |> Trial.map (fun players -> { Players = players })
 
-    let roll score game =
+    let currentPlayer game =
         let currentFrameNumber =
             game.Players
             |> List.head
-            |> fun player -> player.Frames
-            |> List.last
+            |> Player.lastFrame
             |> fun frame -> frame.Number
 
-        let currentPlayerIndex =
-            game.Players
-            |> List.tryFindIndex (fun player ->
-                let frame = player.Frames |> List.last
-                frame.Number <> currentFrameNumber)
-            |> Option.orElse
-                (game.Players
-                |> List.tryFindIndex (fun player ->
-                    let frame = player.Frames |> List.last
-                    frame |> Frame.isFinished |> not))
-            |> Option.defaultValue 0
-        
         game.Players
-        |> List.mapi (fun index player ->
-            if index = currentPlayerIndex
+        |> List.tryFind (Player.lastFrame >> (fun frame -> frame.Number) >> (<>) currentFrameNumber)
+        |> Option.orElse (game.Players |> List.tryFind (Player.lastFrame >> Frame.isFinished >> not))
+        |> Option.defaultValue (game.Players |> List.head)
+
+    let roll score game =
+        game.Players
+        |> List.map (fun player ->
+            if player.Name = (game |> currentPlayer).Name
             then player |> Player.roll score
             else player |> ok)
         |> Trial.sequence

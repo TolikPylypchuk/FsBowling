@@ -30,7 +30,8 @@ module Player =
         return { player with Frames = result }
     }
 
-    let isFinished player =
-        player.Frames
-        |> List.last
-        |> fun frame -> frame.Number = Frame.lastFrameNumber && frame |> Frame.isFinished
+    let lastFrame player =
+        player.Frames |> List.last
+
+    let isFinished =
+        lastFrame >> fun frame -> frame.Number = Frame.lastFrameNumber && frame |> Frame.isFinished
