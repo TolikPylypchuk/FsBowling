@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+<assembly><name>FsBowling</name></assembly>
+<members>
+<member name="T:FsBowling.BowlingError.RollAfterLastFrame">
+ <summary>
+ The roll occured when the player finished all their frames.
+ </summary>
+</member>
+<member name="T:FsBowling.BowlingError.InvalidScore">
+ <summary>
+ The score is invalid.
+ </summary>
+</member>
+<member name="T:FsBowling.BowlingError.DuplicatePlayers">
+ <summary>
+ The list of players contains duplicate names.
+ </summary>
+</member>
+<member name="T:FsBowling.BowlingError.PlayerListEmpty">
+ <summary>
+ The list of players is empty.
+ </summary>
+</member>
+<member name="T:FsBowling.BowlingError.PlayerNameTooLong">
+ <summary>
+ The player name exceeds the maximum player name length.
+ </summary>
+</member>
+<member name="T:FsBowling.BowlingError.PlayerNameEmpty">
+ <summary>
+ The player name is empty.
+ </summary>
+</member>
+<member name="T:FsBowling.BowlingError.InvalidFrameNumber">
+ <summary>
+ The frame number is invalid.
+ </summary>
+</member>
+<member name="T:FsBowling.BowlingError">
+ <summary>
+ Represents an error which may occur during the calculation of a bowling score.
+ </summary>
+</member>
+</members>
+</doc>

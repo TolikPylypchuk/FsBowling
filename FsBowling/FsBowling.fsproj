@@ -4,10 +4,15 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>FsBowling.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="Operators.fs" />
     <Compile Include="Trial.fs" />
     <Compile Include="State.fs" />
+    <Compile Include="BowlingError.fsi" />
     <Compile Include="BowlingError.fs" />
     <Compile Include="PlayerName.fs" />
     <Compile Include="Frame.fs" />
