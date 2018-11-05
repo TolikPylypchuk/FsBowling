@@ -15,11 +15,23 @@ module Game =
         |> Trial.map (fun players -> { Players = players })
 
     let roll score game =
-        let currentFrameNumber = game.Players |> List.head |> Player.getLastFrameNumber
+        let currentFrameNumber =
+            game.Players
+            |> List.head
+            |> fun player -> player.Frames
+            |> List.last
+            |> fun frame -> frame.Number
 
         let currentPlayerIndex =
             game.Players
-            |> List.tryFindIndex (Player.getLastFrameNumber >> (<>) currentFrameNumber)
+            |> List.tryFindIndex (fun player ->
+                let frame = player.Frames |> List.last
+                frame.Number <> currentFrameNumber)
+            |> Option.orElse
+                (game.Players
+                |> List.tryFindIndex (fun player ->
+                    let frame = player.Frames |> List.last
+                    frame |> Frame.isFinished |> not))
             |> Option.defaultValue 0
         
         game.Players
