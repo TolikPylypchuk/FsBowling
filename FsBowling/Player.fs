@@ -9,13 +9,15 @@ type Player = {
 
 module Player =
     
-    let create name = trial {
-        let! frame = Frame.create 1
-        return {
+    let create name =
+        Frame.create 1
+        |> Trial.map (fun frame -> {
             Name = name
             Frames = [ frame ]
-        }
-    }
+        })
+
+    let getName player =
+        player.Name |> PlayerName.get
 
     let roll score player = trial {
         let reversedFrames = player.Frames |> List.rev

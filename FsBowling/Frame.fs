@@ -52,7 +52,7 @@ module Frame =
         frame.Number = lastFrameNumber
 
     let private rollForNotStarted score frame =
-        if score >= 0 && score < numberOfPins then
+        if score < numberOfPins then
             { frame with State = InProgress score }
         else
             if frame.Number <> lastFrameNumber
@@ -60,8 +60,7 @@ module Frame =
             else { frame with State = LastStrikeInProgress1 }
             
     let private rollForInProgress firstScore secondScore frame =
-        let score = firstScore + secondScore
-        if score >= 0 && score < numberOfPins then
+        if (firstScore + secondScore) < numberOfPins then
             { frame with State = Open (firstScore, secondScore) }
         else
             if frame.Number <> lastFrameNumber
@@ -139,18 +138,15 @@ module Frame =
                 yield secondScore
         })
 
-    let getTotal frameScores =
-        frameScores |> List.tryHead |> Option.map (fun score -> score.Total |> Option.defaultValue 0)
+    let getTotal =
+        List.tryHead >> Option.map (fun score -> score.Total |> Option.defaultValue 0) >> Option.defaultValue 0
     
-    let private add item list =
-        list |> List.append [ item ]
-
     let getTotalScores frames =
-        let rec getTotalScores' frames (frameScores : FrameScore list) =
-            match frames with
+        let rec getTotalScores' (frameScores : FrameScore list) =
+            function
             | [] -> frameScores |> List.rev
             | frame :: otherFrames ->
-                let total = frameScores |> getTotal |> Option.defaultValue 0
+                let total = frameScores |> getTotal
                 let score =
                     match frame.State with
                     | NotStarted ->
@@ -160,7 +156,7 @@ module Frame =
                     | Open (firstScore, secondScore) ->
                         { frameScore with
                             Total = total + firstScore + secondScore |> Some
-                            FirstRoll = Some firstScore; SecondRoll = secondScore |> Some }
+                            FirstRoll = firstScore |> Some; SecondRoll = secondScore |> Some }
                     | Strike ->
                         { frameScore with
                             Total = total + numberOfPins + (otherFrames |> getScores |> Seq.truncate 2 |> Seq.fold (+) 0) |> Some
@@ -197,6 +193,6 @@ module Frame =
                             SecondRoll = numberOfPins - firstScore |> Some
                             ThirdRoll = secondScore |> Some }
 
-                getTotalScores' otherFrames (frameScores |> add score)
+                otherFrames |> getTotalScores' (score :: frameScores)
 
-        getTotalScores' frames []
+        frames |> getTotalScores' []

@@ -5,10 +5,14 @@ open System
 open State
 open Frame
 
-let append (suffix : string) str = str + suffix
+let append (suffix : string) =
+    update <| fun str -> str + suffix
+
+let pad num (str : string) =
+    str.PadRight(num)
 
 let formatRoll score =
-    if score = 0 then "- " else score.ToString().PadRight(2)
+    if score = 0 then "- " else score |> string |> pad 2
 
 let formatScore isLastFrame score =
     state {
@@ -18,7 +22,7 @@ let formatScore isLastFrame score =
             | Some roll -> roll |> formatRoll
             | None -> "  "
 
-        do! update <| append firstPart
+        do! append firstPart
 
         let secondPart =
             match score.FirstRoll, score.SecondRoll with
@@ -27,29 +31,21 @@ let formatScore isLastFrame score =
             | _, Some roll -> roll |> formatRoll
             | _, None -> "  "
 
-        do! update <| append "|"
-        do! update <| append secondPart
+        do! append <| "|" + secondPart
 
         if isLastFrame then
-            match score.ThirdRoll with
-            | Some roll ->
-                let thirdPart = if roll = numberOfPins then "X " else roll |> formatRoll
-                do! update <| append "|"
-                do! update <| append thirdPart
-            | None ->
-                do! update <| append "|  "
-
-    } |> run "" |> snd
+            let thirdPart =
+                match score.ThirdRoll with
+                | Some roll -> if roll = numberOfPins then "X " else roll |> formatRoll
+                | None -> "  "
+            do! append <| "|" + thirdPart
+    } |> run String.Empty |> snd
 
 let formatPlayer player =
     state {
         let totalScores = player.Frames |> Frame.getTotalScores
 
-        let (PlayerName name) = player.Name
-        do! update <| append name
-        do! update <| append "\n"
-
-        let reduceWithPipe = List.reduce (fun acc score -> acc + "|" + score)
+        do! append <| (player |> Player.getName) + "\n"
 
         let firstLine =
             totalScores
@@ -57,38 +53,28 @@ let formatPlayer player =
                 score.Total
                 |> Option.map string
                 |> Option.defaultValue String.Empty
-                |> fun score -> score.PadRight(if index + 1 = Frame.lastFrameNumber then 8 else 5))
-            |> reduceWithPipe
+                |> pad (if index + 1 = Frame.lastFrameNumber then 8 else 5))
+            |> String.concat "|"
 
         let intermediateLine = String.replicate (firstLine.Length + 2) "-"
         
-        do! update <| append intermediateLine
-        do! update <| append "\n"
-
-        do! update <| append "|"
-        do! update <| append firstLine
-        do! update <| append "|\n"
-
-        do! update <| append intermediateLine
-        do! update <| append "\n"
+        do! append <| intermediateLine + "\n"
+        do! append <| "|" + firstLine + "|\n"
+        do! append <| intermediateLine + "\n"
 
         let secondLine =
             totalScores
             |> List.mapi (fun index -> formatScore (index + 1 = Frame.lastFrameNumber))
-            |> reduceWithPipe
+            |> String.concat "|"
 
-        do! update <| append "|"
-        do! update <| append secondLine
-        do! update <| append "|\n"
-
-        do! update <| append intermediateLine
-        do! update <| append "\n"
-    } |> run "" |> snd
+        do! append <| "|" + secondLine + "|\n"
+        do! append <| intermediateLine + "\n"
+    } |> run String.Empty |> snd
     
 let formatGame game =
     game.Players
     |> List.map formatPlayer
-    |> List.reduce (fun players player -> players + "\n" + player)
+    |> String.concat "\n"
 
 let formatError =
     function
@@ -116,5 +102,4 @@ let formatError =
         "The player rolled past the last frame."
 
 let printErrors =
-    List.map formatError
-    >> List.iter (printfn "%s")
+    List.map formatError >> List.iter (printfn "%s")

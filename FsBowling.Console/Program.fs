@@ -9,26 +9,24 @@ let rec createGame () =
     match inputPlayers () |> Game.create with
     | Ok (game, _) -> game
     | Bad errors ->
-        errors |> Output.printErrors
+        errors |> printErrors
         createGame ()
 
 let rec play game =
     if game |> Game.isFinished then
-        ()
+        0
     else
-        let score = game |> inputRoll
-        match game |> Game.roll score with
+        match game |> Game.roll (game |> inputRoll) with
         | Ok (game, _) ->
             game |> formatGame |> printfn "%s"
-            game |> play
+            play game
         | Bad errors ->
-            errors |> Output.printErrors
+            errors |> printErrors
             printfn ""
-            game |> play
+            play game
 
 [<EntryPoint>]
 let main _ =
     printfn "Welcome to FsBowling Console!\n"
     |> createGame
     |> play
-    0
