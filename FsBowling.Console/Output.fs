@@ -1,15 +1,14 @@
 ﻿module FsBowling.Output
 
 open System
+open FSharpPlus
+open FSharpPlus.Data
 
-open State
 open Frame
 
-let add (suffix : string) =
-    update <| fun str -> str + suffix
-    
-let addLine (suffix : string) =
-    update <| fun str -> str + suffix + Environment.NewLine
+let add = Writer.tell
+
+let addLine = flip (+) Environment.NewLine >> Writer.tell
 
 let pad num (str : string) =
     str.PadRight(num)
@@ -18,7 +17,7 @@ let formatRoll score =
     if score = 0 then "- " else score |> string |> pad 2
 
 let formatScore isLastFrame score =
-    state {
+    monad {
         let format roll =
             match roll with
             | Some roll when roll = numberOfPins -> "X "
@@ -39,10 +38,10 @@ let formatScore isLastFrame score =
         if isLastFrame then
             do! add "|"
             do! add <| format score.ThirdRoll
-    } |> run String.Empty |> snd
+    } |> Writer.exec
 
 let formatPlayer player =
-    state {
+    monad {
         let totalScores = player.Frames |> Frame.getTotalScores
 
         do! addLine (player |> Player.getName) 
@@ -69,7 +68,7 @@ let formatPlayer player =
 
         do! addLine <| "|" + secondLine + "|"
         do! addLine intermediateLine
-    } |> run String.Empty |> snd
+    } |> Writer.exec
     
 let formatGame game =
     game.Players

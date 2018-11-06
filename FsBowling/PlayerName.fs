@@ -34,5 +34,8 @@ module PlayerName =
             then players |> ok
             else duplicatePlayers |> List.map get |> DuplicatePlayers |> fail
 
-    let createPlayerNames =
-        List.map create >> Trial.sequence >=> validatePlayerNames
+    let createPlayerNames names =
+        names
+        |> List.map create
+        |> Trial.sequence
+        |> Trial.bind validatePlayerNames
