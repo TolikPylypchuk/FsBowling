@@ -109,44 +109,39 @@ module Frame =
 
     let getScores frames =
         frames |> Seq.collect (fun frame -> seq {
-            match frame.State with
-            | NotStarted ->
-                yield! Seq.empty
-            | InProgress score ->
-                yield score
-            | Open (firstScore, secondScore) ->
-                yield firstScore
-                yield secondScore
-            | Strike | LastStrikeInProgress1 ->
-                yield numberOfPins
-            | LastStrikeInProgress2 score ->
-                yield numberOfPins
-                yield score
-            | LastStrike (firstScore, secondScore) ->
-                yield numberOfPins
-                yield firstScore
-                yield secondScore
-            | Spare score ->
-                yield score
-                yield (numberOfPins - score)
-            | LastSpareInProgress score ->
-                yield score
-                yield (numberOfPins - score)
-            | LastSpare (firstScore, secondScore) ->
-                yield firstScore
-                yield (numberOfPins - firstScore)
-                yield secondScore
+            yield!
+                match frame.State with
+                | NotStarted ->
+                    [ None; None ]
+                | InProgress score ->
+                    [ Some score; None ]
+                | Open (firstScore, secondScore) ->
+                    [ Some firstScore; Some secondScore ]
+                | Strike ->
+                    [ Some numberOfPins; None ]
+                | LastStrikeInProgress1 ->
+                    [ Some numberOfPins; None; None ]
+                | LastStrikeInProgress2 score ->
+                    [ Some numberOfPins; Some score; None ]
+                | LastStrike (firstScore, secondScore) ->
+                    [ Some numberOfPins; Some firstScore; Some secondScore ]
+                | Spare score ->
+                    [ Some score; Some (numberOfPins - score) ]
+                | LastSpareInProgress score ->
+                    [ Some score; Some (numberOfPins - score) ]
+                | LastSpare (firstScore, secondScore) ->
+                    [ Some firstScore; Some (numberOfPins - firstScore); Some secondScore ]
         })
-
+        
     let getTotal =
         List.tryHead >> Option.map (fun score -> score.Total |> Option.defaultValue 0) >> Option.defaultValue 0
-    
+
     let getTotalScores frames =
-        let rec getTotalScores' (frameScores : FrameScore list) =
-            function
+        let rec getTotalScores' total (frameScores : FrameScore list) frames =
+            match frames with
             | [] -> frameScores |> List.rev
             | frame :: otherFrames ->
-                let total = frameScores |> getTotal
+                let scores = otherFrames |> getScores |> Seq.map (Option.defaultValue 0)
                 let score =
                     match frame.State with
                     | NotStarted ->
@@ -159,11 +154,11 @@ module Frame =
                             FirstRoll = firstScore |> Some; SecondRoll = secondScore |> Some }
                     | Strike ->
                         { frameScore with
-                            Total = total + numberOfPins + (otherFrames |> getScores |> Seq.truncate 2 |> Seq.fold (+) 0) |> Some
+                            Total = total + numberOfPins + (scores |> Seq.truncate 2 |> Seq.fold (+) 0) |> Some
                             FirstRoll = numberOfPins |> Some }
                     | Spare score ->
                         { frameScore with
-                            Total = total + numberOfPins + (otherFrames |> getScores |> Seq.tryHead |> Option.defaultValue 0) |> Some
+                            Total = total + numberOfPins + (scores |> Seq.tryHead |> Option.defaultValue 0) |> Some
                             FirstRoll = score |> Some
                             SecondRoll = numberOfPins - score |> Some }
                     | LastStrikeInProgress1 ->
@@ -193,6 +188,6 @@ module Frame =
                             SecondRoll = numberOfPins - firstScore |> Some
                             ThirdRoll = secondScore |> Some }
 
-                otherFrames |> getTotalScores' (score :: frameScores)
+                otherFrames |> getTotalScores' (total + (score.Total |> Option.defaultValue 0)) (score :: frameScores)
 
-        frames |> getTotalScores' []
+        frames |> getTotalScores' 0 []

@@ -5,8 +5,11 @@ open System
 open State
 open Frame
 
-let append (suffix : string) =
+let add (suffix : string) =
     update <| fun str -> str + suffix
+    
+let addLine (suffix : string) =
+    update <| fun str -> str + suffix + Environment.NewLine
 
 let pad num (str : string) =
     str.PadRight(num)
@@ -16,36 +19,33 @@ let formatRoll score =
 
 let formatScore isLastFrame score =
     state {
-        let firstPart =
-            match score.FirstRoll with
+        let format roll =
+            match roll with
             | Some roll when roll = numberOfPins -> "X "
             | Some roll -> roll |> formatRoll
             | None -> "  "
 
-        do! append firstPart
+        do! add <| format score.FirstRoll
 
-        let secondPart =
+        let secondRoll =
             match score.FirstRoll, score.SecondRoll with
             | Some roll1, Some roll2 when roll1 + roll2 = numberOfPins -> "/ "
             | Some roll1, Some roll2 when roll1 = numberOfPins && roll2 = numberOfPins -> "X "
             | _, Some roll -> roll |> formatRoll
             | _, None -> "  "
 
-        do! append <| "|" + secondPart
+        do! add <| "|" + secondRoll
 
         if isLastFrame then
-            let thirdPart =
-                match score.ThirdRoll with
-                | Some roll -> if roll = numberOfPins then "X " else roll |> formatRoll
-                | None -> "  "
-            do! append <| "|" + thirdPart
+            do! add "|"
+            do! add <| format score.ThirdRoll
     } |> run String.Empty |> snd
 
 let formatPlayer player =
     state {
         let totalScores = player.Frames |> Frame.getTotalScores
 
-        do! append <| (player |> Player.getName) + "\n"
+        do! addLine (player |> Player.getName) 
 
         let firstLine =
             totalScores
@@ -58,17 +58,17 @@ let formatPlayer player =
 
         let intermediateLine = String.replicate (firstLine.Length + 2) "-"
         
-        do! append <| intermediateLine + "\n"
-        do! append <| "|" + firstLine + "|\n"
-        do! append <| intermediateLine + "\n"
+        do! addLine intermediateLine
+        do! addLine <| "|" + firstLine + "|"
+        do! addLine intermediateLine
 
         let secondLine =
             totalScores
             |> List.mapi (fun index -> formatScore (index + 1 = Frame.lastFrameNumber))
             |> String.concat "|"
 
-        do! append <| "|" + secondLine + "|\n"
-        do! append <| intermediateLine + "\n"
+        do! addLine <| "|" + secondLine + "|"
+        do! addLine intermediateLine
     } |> run String.Empty |> snd
     
 let formatGame game =
