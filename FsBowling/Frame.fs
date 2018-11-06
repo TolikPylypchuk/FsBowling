@@ -137,11 +137,12 @@ module Frame =
         List.tryHead >> Option.map (fun score -> score.Total |> Option.defaultValue 0) >> Option.defaultValue 0
 
     let getTotalScores frames =
-        let rec getTotalScores' total (frameScores : FrameScore list) frames =
+        let rec getTotalScores' (frameScores : FrameScore list) frames =
             match frames with
             | [] -> frameScores |> List.rev
             | frame :: otherFrames ->
-                let scores = otherFrames |> getScores |> Seq.map (Option.defaultValue 0)
+                let scores = otherFrames |> getScores |> Seq.choose id
+                let total = frameScores |> getTotal
                 let score =
                     match frame.State with
                     | NotStarted ->
@@ -188,6 +189,6 @@ module Frame =
                             SecondRoll = numberOfPins - firstScore |> Some
                             ThirdRoll = secondScore |> Some }
 
-                otherFrames |> getTotalScores' (total + (score.Total |> Option.defaultValue 0)) (score :: frameScores)
+                otherFrames |> getTotalScores' (score :: frameScores)
 
-        frames |> getTotalScores' 0 []
+        frames |> getTotalScores' []
