@@ -12,6 +12,7 @@
     <Compile Include="Trial.fs" />
     <Compile Include="BowlingError.fsi" />
     <Compile Include="BowlingError.fs" />
+    <Compile Include="Config.fs" />
     <Compile Include="PlayerName.fs" />
     <Compile Include="Frame.fs" />
     <Compile Include="Player.fs" />

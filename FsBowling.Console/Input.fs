@@ -1,6 +1,8 @@
 ﻿module FsBowling.Input
 
 open System
+open FSharpPlus
+open FSharpPlus.Data
 open Chessie.ErrorHandling
 
 let read = Console.ReadLine
@@ -25,30 +27,37 @@ let inputNumPlayers () =
 let inputPlayer index =
     printf "\nEnter the name of player #%i: " <| index + 1
 
-    let rec inputPlayer' () =
-        match read () |> PlayerName.create with
-        | Ok (player, _) -> player
+    let rec inputPlayer' () = monad {
+        match! read () |> PlayerName.create with
+        | Ok (player, _) -> return player
         | Bad errors ->
             printfn "\nThe player name is invalid."
-            errors |> Output.printErrors
+            do! errors |> Output.printErrors
             printf "\nPlease try again: "
-            inputPlayer' ()
+            return! inputPlayer' ()
+    }
 
     inputPlayer' ()
 
-let rec inputPlayers () =
+let rec inputPlayers () = monad {
+    let! config = Reader.ask
     let numPlayers = inputNumPlayers ()
+    let names =
+        List.init numPlayers inputPlayer
+        |> List.map (flip Reader.run config)
+        |> PlayerName.validatePlayerNames
 
-    match List.init numPlayers inputPlayer |> PlayerName.validatePlayerNames with
+    match names with
     | Ok (players, _) ->
         printfn ""
-        players
+        return players
     | Bad errors ->
         printfn "The player list is invalid."
-        errors |> Output.printErrors
+        do! errors |> Output.printErrors
         printfn "Please try again.\n"
 
-        inputPlayers ()
+        return! inputPlayers ()
+}
 
 let inputRoll game =
     printf "%s rolls with score: " (game |> Game.currentPlayer |> Player.getName)

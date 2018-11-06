@@ -75,30 +75,39 @@ let formatGame game =
     |> List.map formatPlayer
     |> String.concat "\n"
 
-let formatError =
-    function
-    | InvalidFrameNumber num ->
-        sprintf "%i is an invalid frame number." num
-    | PlayerNameEmpty ->
-        "The player's name is empty."
-    | PlayerNameTooLong _ ->
-        sprintf "The name is too long. A player's name should not exceed %i characters." PlayerName.maxNameLength
-    | PlayerListEmpty ->
-        "The player list is empty."
-    | DuplicatePlayers players ->
-        match players with
-        | [ player ] ->
-            sprintf "The name %s is duplicated." player
-        | [] ->
-            "An error occured - no names are duplicated but the app thinks they are."
-        | _ ->
-            players
-            |> List.reduce (fun acc item -> acc + ", " + item)
-            |> sprintf "The names %s are duplicated."
-    | InvalidScore score ->
-        sprintf "%i is an invalid score. A score of a frame must be less than or equal to %i." score Frame.numberOfPins
-    | RollAfterLastFrame ->
-        "The player rolled past the last frame."
+let formatError error = monad {
+    let! config = Reader.ask
+    return
+        match error with
+        | InvalidFrameNumber num ->
+            sprintf "%i is an invalid frame number." num
+        | PlayerNameEmpty ->
+            "The player's name is empty."
+        | PlayerNameTooLong _ ->
+            sprintf "The name is too long. A player's name should not exceed %i characters." (config.MaxNameLength |> Option.defaultValue 0)
+        | PlayerListEmpty ->
+            "The player list is empty."
+        | DuplicatePlayers players ->
+            match players with
+            | [ player ] ->
+                sprintf "The name %s is duplicated." player
+            | [] ->
+                "An error occured - no names are duplicated but the app thinks they are."
+            | _ ->
+                players
+                |> List.reduce (fun acc item -> acc + ", " + item)
+                |> sprintf "The names %s are duplicated."
+        | InvalidScore score ->
+            sprintf "%i is an invalid score. A score of a frame must be less than or equal to %i." score Frame.numberOfPins
+        | RollAfterLastFrame ->
+            "The player rolled past the last frame."
+}
 
-let printErrors =
-    List.map formatError >> List.iter (printfn "%s")
+let printErrors errors = monad {
+    let! config = Reader.ask
+    return
+        errors
+        |> List.map formatError
+        |> List.map (flip Reader.run config)
+        |> List.iter (printfn "%s")
+}

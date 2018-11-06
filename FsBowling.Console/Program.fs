@@ -1,32 +1,39 @@
 ﻿module FsBowling.Program
 
+open FSharpPlus
+open FSharpPlus.Data
 open Chessie.ErrorHandling
 
 open Input
 open Output
 
-let rec createGame () =
-    match inputPlayers () |> Game.create with
-    | Ok (game, _) -> game
+let rec createGame () = monad {
+    let! players = inputPlayers ()
+    match players |> Game.create with
+    | Ok (game, _) -> return game
     | Bad errors ->
-        errors |> printErrors
-        createGame ()
+        do! errors |> printErrors
+        return! createGame ()
+}
 
-let rec play game =
+let rec play game = monad {
     if game |> Game.isFinished then
-        0
+        return ()
     else
         match game |> Game.roll (game |> inputRoll) with
         | Ok (game, _) ->
             game |> formatGame |> printfn "%s"
-            play game
+            return! play game
         | Bad errors ->
-            errors |> printErrors
+            do! errors |> printErrors
             printfn ""
-            play game
+            return! play game
+}
 
 [<EntryPoint>]
 let main _ =
     printfn "Welcome to FsBowling Console!\n"
     |> createGame
-    |> play
+    |> Reader.bind play
+    |> flip Reader.run Config.defaultConfig
+    0
