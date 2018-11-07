@@ -26,6 +26,11 @@ type BowlingError =
     | PlayerListEmpty
     
     /// <summary>
+    /// Too many players.
+    /// </summary>
+    | TooManyPlayers
+    
+    /// <summary>
     /// The list of players contains duplicate names.
     /// </summary>
     | DuplicatePlayers of string list

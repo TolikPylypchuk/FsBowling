@@ -6,7 +6,7 @@ open FSharpPlus.Data
 
 let add = Writer.tell
 
-let addLine = flip (+) Environment.NewLine >> Writer.tell
+let addLine = flip (+) "\n" >> Writer.tell
 
 let pad num (str : string) =
     str.PadRight(num)
@@ -91,6 +91,8 @@ let formatError error = monad {
         | PlayerNameTooLong _ ->
             sprintf "The name is too long. A player's name should not exceed %i characters." (config.MaxNameLength |> Option.defaultValue 0)
         | PlayerListEmpty ->
+            "The player list is empty."
+        | TooManyPlayers ->
             "The player list is empty."
         | DuplicatePlayers players ->
             match players with

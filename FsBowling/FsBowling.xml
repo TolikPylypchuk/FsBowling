@@ -17,6 +17,11 @@
  The list of players contains duplicate names.
  </summary>
 </member>
+<member name="T:FsBowling.BowlingError.TooManyPlayers">
+ <summary>
+ Too many players.
+ </summary>
+</member>
 <member name="T:FsBowling.BowlingError.PlayerListEmpty">
  <summary>
  The list of players is empty.

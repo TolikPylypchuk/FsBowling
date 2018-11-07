@@ -15,13 +15,20 @@ let readInt () =
 let inputNumPlayers () =
     printf "Enter the number of players: "
 
-    let rec inputNumPlayers' () =
-        match readInt () with
-        | Some num when num > 0 ->
-            num
-        | _ ->
-            printf "\nThe number of players must be positive. Please try again: "
-            inputNumPlayers' ()
+    let rec inputNumPlayers' () = monad {
+        let! config = Reader.ask
+        match readInt (), config.MaxPlayerCount with
+            | Some num, None when num > 0 ->
+                return num
+            | Some num, Some count when num > 0 && num <= count ->
+                return num
+            | _, Some count ->
+                printf "\nThe number of players must be positive and at most %i. Please try again: " count
+                return! inputNumPlayers' ()
+            | _, None ->
+                printf "\nThe number of players must be positive. Please try again: "
+                return! inputNumPlayers' ()
+    }
 
     inputNumPlayers' ()
 
@@ -41,18 +48,18 @@ let inputPlayer index =
     inputPlayer' ()
 
 let rec inputPlayers () = monad {
-    let numPlayers = inputNumPlayers ()
+    let! numPlayers = inputNumPlayers ()
     let! names =
         inputPlayer
         |> List.init numPlayers
         |> sequence
 
-    match names |> PlayerName.validatePlayerNames with
+    match! names |> PlayerName.validatePlayerNames with
     | Ok players ->
         printfn ""
         return players
     | Error error ->
-        printfn "The player list is invalid."
+        printfn "\nThe player list is invalid."
         do! error |> formatError |>> printfn "%s"
         printfn "Please try again.\n"
         return! inputPlayers ()

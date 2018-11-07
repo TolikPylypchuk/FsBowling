@@ -5,6 +5,7 @@ type BowlingError =
     | PlayerNameEmpty
     | PlayerNameTooLong of string
     | PlayerListEmpty
+    | TooManyPlayers
     | DuplicatePlayers of string list
     | InvalidScore of int
     | RollAfterLastFrame

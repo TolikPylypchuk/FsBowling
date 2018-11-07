@@ -24,15 +24,20 @@ module PlayerName =
     }
 
     let validatePlayerNames players =
-        if players |> List.isEmpty then
-            PlayerListEmpty |> Error
-        else
-            let duplicatePlayers =
-                players
-                |> List.groupBy id
-                |> List.filter (snd >> List.length >> (<>) 1)
-                |> List.map fst
+        Reader.ask |>> (fun config ->
+            if players |> List.isEmpty then
+                PlayerListEmpty |> Error
+            else
+                match config.MaxPlayerCount with
+                | Some count when players |> List.length > count ->
+                    TooManyPlayers |> Error
+                | _ ->
+                    let duplicatePlayers =
+                        players
+                        |> List.groupBy id
+                        |> List.filter (snd >> List.length >> (<>) 1)
+                        |> List.map fst
 
-            if duplicatePlayers |> List.isEmpty
-            then players |> Ok
-            else duplicatePlayers |> List.map get |> DuplicatePlayers |> Error
+                    if duplicatePlayers |> List.isEmpty
+                    then players |> Ok
+                    else duplicatePlayers |> List.map get |> DuplicatePlayers |> Error)
