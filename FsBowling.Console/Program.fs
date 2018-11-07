@@ -9,7 +9,7 @@ open Output
 
 let rec createGame () = monad {
     let! players = inputPlayers ()
-    match players |> Game.create with
+    match! players |> Game.create with
     | Ok (game, _) -> return game
     | Bad errors ->
         do! errors |> printErrors
@@ -17,12 +17,14 @@ let rec createGame () = monad {
 }
 
 let rec play game = monad {
-    if game |> Game.isFinished then
-        return ()
+    let! isGameFinished = game |> Game.isFinished
+    if isGameFinished then
+        return 0
     else
-        match game |> Game.roll (game |> inputRoll) with
+        match! game |> Game.roll (game |> inputRoll) with
         | Ok (game, _) ->
-            game |> formatGame |> printfn "%s"
+            let! formattedGame = game |> formatGame
+            printfn "%s" formattedGame
             return! play game
         | Bad errors ->
             do! errors |> printErrors
@@ -36,4 +38,3 @@ let main _ =
     |> createGame
     |> Reader.bind play
     |> flip Reader.run Config.defaultConfig
-    0

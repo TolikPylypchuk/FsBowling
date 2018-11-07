@@ -1,5 +1,7 @@
 ﻿namespace FsBowling
 
+open FSharpPlus
+open FSharpPlus.Data
 open Chessie.ErrorHandling
 
 type Game = {
@@ -7,12 +9,13 @@ type Game = {
 }
 
 module Game =
-
+    
     let create playerNames =
         playerNames
         |> List.map Player.create
-        |> Trial.sequence
-        |> Trial.map (fun players -> { Players = players })
+        |> sequence
+        |>> Trial.sequence
+        |>> Trial.map (fun players -> { Players = players })
 
     let currentPlayer game =
         let currentFrameNumber =
@@ -31,9 +34,10 @@ module Game =
         |> List.map (fun player ->
             if player.Name = (game |> currentPlayer).Name
             then player |> Player.roll score
-            else player |> ok)
-        |> Trial.sequence
-        |> Trial.map (fun players -> { game with Players = players })
+            else player |> ok |> result)
+        |> sequence
+        |>> Trial.sequence
+        |>> Trial.map (fun players -> { game with Players = players })
 
     let isFinished game =
         game.Players

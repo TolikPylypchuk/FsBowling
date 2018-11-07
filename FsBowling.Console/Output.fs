@@ -16,11 +16,12 @@ let pad num (str : string) =
 let formatRoll score =
     if score = 0 then "- " else score |> string |> pad 2
 
-let formatScore isLastFrame score =
-    monad {
+let formatScore isLastFrame score = monad {
+    let! config = Reader.ask
+    return monad {
         let format roll =
             match roll with
-            | Some roll when roll = numberOfPins -> "X "
+            | Some roll when roll = config.NumberOfPins -> "X "
             | Some roll -> roll |> formatRoll
             | None -> "  "
 
@@ -28,8 +29,8 @@ let formatScore isLastFrame score =
 
         let secondRoll =
             match score.FirstRoll, score.SecondRoll with
-            | Some roll1, Some roll2 when roll1 + roll2 = numberOfPins -> "/ "
-            | Some roll1, Some roll2 when roll1 = numberOfPins && roll2 = numberOfPins -> "X "
+            | Some roll1, Some roll2 when roll1 + roll2 = config.NumberOfPins -> "/ "
+            | Some roll1, Some roll2 when roll1 = config.NumberOfPins && roll2 = config.NumberOfPins -> "X "
             | _, Some roll -> roll |> formatRoll
             | _, None -> "  "
 
@@ -39,11 +40,13 @@ let formatScore isLastFrame score =
             do! add "|"
             do! add <| format score.ThirdRoll
     } |> Writer.exec
+}
 
-let formatPlayer player =
-    monad {
-        let totalScores = player.Frames |> Frame.getTotalScores
+let formatPlayer player = monad {
+    let! config = Reader.ask
+    let! totalScores = player.Frames |> Frame.getTotalScores
 
+    return monad {
         do! addLine (player |> Player.getName) 
 
         let firstLine =
@@ -52,7 +55,7 @@ let formatPlayer player =
                 score.Total
                 |> Option.map string
                 |> Option.defaultValue String.Empty
-                |> pad (if index + 1 = Frame.lastFrameNumber then 8 else 5))
+                |> pad (if index + 1 = config.NumberOfFrames then 8 else 5))
             |> String.concat "|"
 
         let intermediateLine = String.replicate (firstLine.Length + 2) "-"
@@ -60,20 +63,24 @@ let formatPlayer player =
         do! addLine intermediateLine
         do! addLine <| "|" + firstLine + "|"
         do! addLine intermediateLine
-
+        
         let secondLine =
             totalScores
-            |> List.mapi (fun index -> formatScore (index + 1 = Frame.lastFrameNumber))
+            |> List.mapi (fun index -> formatScore (index + 1 = config.NumberOfFrames))
+            |> sequence
+            |> flip Reader.run config
             |> String.concat "|"
 
         do! addLine <| "|" + secondLine + "|"
         do! addLine intermediateLine
     } |> Writer.exec
+}
     
 let formatGame game =
     game.Players
     |> List.map formatPlayer
-    |> String.concat "\n"
+    |> sequence
+    |>> String.concat "\n"
 
 let formatError error = monad {
     let! config = Reader.ask
@@ -98,16 +105,13 @@ let formatError error = monad {
                 |> List.reduce (fun acc item -> acc + ", " + item)
                 |> sprintf "The names %s are duplicated."
         | InvalidScore score ->
-            sprintf "%i is an invalid score. A score of a frame must be less than or equal to %i." score Frame.numberOfPins
+            sprintf "%i is an invalid score. A score of a frame must be less than or equal to %i." score config.NumberOfPins
         | RollAfterLastFrame ->
             "The player rolled past the last frame."
 }
 
-let printErrors errors = monad {
-    let! config = Reader.ask
-    return
-        errors
-        |> List.map formatError
-        |> List.map (flip Reader.run config)
-        |> List.iter (printfn "%s")
-}
+let printErrors errors =
+    errors
+    |> List.map formatError
+    |> sequence
+    |>> List.iter (printfn "%s")
