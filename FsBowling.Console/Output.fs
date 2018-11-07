@@ -4,8 +4,6 @@ open System
 open FSharpPlus
 open FSharpPlus.Data
 
-open Frame
-
 let add = Writer.tell
 
 let addLine = flip (+) Environment.NewLine >> Writer.tell
@@ -102,7 +100,7 @@ let formatError error = monad {
                 "An error occured - no names are duplicated but the app thinks they are."
             | _ ->
                 players
-                |> List.reduce (fun acc item -> acc + ", " + item)
+                |> String.concat ", "
                 |> sprintf "The names %s are duplicated."
         | InvalidScore score ->
             sprintf "%i is an invalid score. A score of a frame must be less than or equal to %i." score config.NumberOfPins

@@ -41,14 +41,13 @@ let inputPlayer index =
     inputPlayer' ()
 
 let rec inputPlayers () = monad {
-    let! config = Reader.ask
     let numPlayers = inputNumPlayers ()
-    let names =
-        List.init numPlayers inputPlayer
-        |> List.map (flip Reader.run config)
-        |> PlayerName.validatePlayerNames
+    let! names =
+        inputPlayer
+        |> List.init numPlayers
+        |> sequence
 
-    match names with
+    match names |> PlayerName.validatePlayerNames with
     | Ok players ->
         printfn ""
         return players
@@ -56,7 +55,6 @@ let rec inputPlayers () = monad {
         printfn "The player list is invalid."
         do! error |> formatError |>> printfn "%s"
         printfn "Please try again.\n"
-
         return! inputPlayers ()
 }
 

@@ -8,6 +8,10 @@ type Config = {
 
 module Config =
 
+    let getMaxNameLength { MaxNameLength = length } = length
+    let getNumberOfPins { NumberOfPins = num } = num
+    let NumberOfFrames { NumberOfFrames = num } = num
+
     let defaultConfig = {
         MaxNameLength = None
         NumberOfPins = 10

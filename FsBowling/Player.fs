@@ -23,8 +23,15 @@ module Player =
     let roll score player =
         Reader.ask |>> (fun config -> monad {
             let reversedFrames = player.Frames |> List.rev
-            let! frame = reversedFrames |> List.head |> Frame.roll score |> Reader.run <| config
+
+            let! frame =
+                reversedFrames
+                |> List.head
+                |> Frame.roll score
+                |> Reader.run <| config
+
             let frames = frame :: (reversedFrames |> List.tail)
+
             let result =
                 if frame |> Frame.isFinished && frame.Number <> config.NumberOfFrames
                 then { State = NotStarted; Number = frame.Number + 1 } :: frames

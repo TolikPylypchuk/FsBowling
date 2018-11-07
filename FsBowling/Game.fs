@@ -27,7 +27,7 @@ module Game =
             |> fun frame -> frame.Number
 
         game.Players
-        |> List.tryFind (Player.lastFrame >> (fun frame -> frame.Number) >> (<>) currentFrameNumber)
+        |> List.tryFind (Player.lastFrame >> Frame.getNumber >> (<>) currentFrameNumber)
         |> Option.orElse (game.Players |> List.tryFind (Player.lastFrame >> Frame.isFinished >> not))
         |> Option.defaultValue (game.Players |> List.head)
 

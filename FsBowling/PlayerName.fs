@@ -30,7 +30,7 @@ module PlayerName =
             let duplicatePlayers =
                 players
                 |> List.groupBy id
-                |> List.filter (fun (_, list) -> list |> List.length <> 1)
+                |> List.filter (snd >> List.length >> (<>) 1)
                 |> List.map fst
 
             if duplicatePlayers |> List.isEmpty

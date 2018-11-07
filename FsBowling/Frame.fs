@@ -28,6 +28,14 @@ type FrameScore = {
 }
 
 module Frame =
+
+    let getState { State = state } = state
+    let getNumber { Number = num } = num
+
+    let getTotalScore { Total = total } = total
+    let getFirstRollScore { FirstRoll = roll } = roll
+    let getSecondRollScore { SecondRoll = roll } = roll
+    let getThirdRollScore { ThirdRoll = roll } = roll
     
     let private frameScore = {
         Total = None
@@ -140,7 +148,7 @@ module Frame =
     }
     
     let getTotal =
-        List.tryHead >> Option.map (fun score -> score.Total |> Option.defaultValue 0) >> Option.defaultValue 0
+        List.tryHead >> Option.map (getTotalScore >> Option.defaultValue 0) >> Option.defaultValue 0
 
     let getTotalScores frames =
         let rec getTotalScores' (frameScores : FrameScore list) frames = monad {
