@@ -3,7 +3,8 @@
 open System
 open FSharpPlus
 open FSharpPlus.Data
-open Chessie.ErrorHandling
+
+open Output
 
 let read = Console.ReadLine
 
@@ -29,10 +30,10 @@ let inputPlayer index =
 
     let rec inputPlayer' () = monad {
         match! read () |> PlayerName.create with
-        | Ok (player, _) -> return player
-        | Bad errors ->
+        | Ok player -> return player
+        | Error error ->
             printfn "\nThe player name is invalid."
-            do! errors |> Output.printErrors
+            do! error |> formatError |>> printfn "%s"
             printf "\nPlease try again: "
             return! inputPlayer' ()
     }
@@ -48,12 +49,12 @@ let rec inputPlayers () = monad {
         |> PlayerName.validatePlayerNames
 
     match names with
-    | Ok (players, _) ->
+    | Ok players ->
         printfn ""
         return players
-    | Bad errors ->
+    | Error error ->
         printfn "The player list is invalid."
-        do! errors |> Output.printErrors
+        do! error |> formatError |>> printfn "%s"
         printfn "Please try again.\n"
 
         return! inputPlayers ()

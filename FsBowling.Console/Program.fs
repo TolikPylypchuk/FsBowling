@@ -2,7 +2,6 @@
 
 open FSharpPlus
 open FSharpPlus.Data
-open Chessie.ErrorHandling
 
 open Input
 open Output
@@ -10,9 +9,9 @@ open Output
 let rec createGame () = monad {
     let! players = inputPlayers ()
     match! players |> Game.create with
-    | Ok (game, _) -> return game
-    | Bad errors ->
-        do! errors |> printErrors
+    | Ok game -> return game
+    | Error error ->
+        do! error |> formatError |>> printfn "%s"
         return! createGame ()
 }
 
@@ -22,12 +21,12 @@ let rec play game = monad {
         return 0
     else
         match! game |> Game.roll (game |> inputRoll) with
-        | Ok (game, _) ->
+        | Ok game ->
             let! formattedGame = game |> formatGame
             printfn "%s" formattedGame
             return! play game
-        | Bad errors ->
-            do! errors |> printErrors
+        | Error error ->
+            do! error |> formatError |>> printfn "%s"
             printfn ""
             return! play game
 }
@@ -36,5 +35,5 @@ let rec play game = monad {
 let main _ =
     printfn "Welcome to FsBowling Console!\n"
     |> createGame
-    |> Reader.bind play
+    >>= play
     |> flip Reader.run Config.defaultConfig

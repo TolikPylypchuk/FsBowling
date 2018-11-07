@@ -9,7 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Trial.fs" />
     <Compile Include="BowlingError.fsi" />
     <Compile Include="BowlingError.fs" />
     <Compile Include="Config.fs" />
@@ -20,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Chessie" Version="0.6.0" />
     <PackageReference Include="FSharpPlus" Version="1.0.0" />
   </ItemGroup>
 

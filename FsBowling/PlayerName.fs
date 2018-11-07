@@ -3,7 +3,6 @@
 open System
 open FSharpPlus
 open FSharpPlus.Data
-open Chessie.ErrorHandling
 
 type PlayerName = PlayerName of string
 
@@ -17,16 +16,16 @@ module PlayerName =
 
         return
             if name = String.Empty then
-                PlayerNameEmpty |> fail
+                PlayerNameEmpty |> Error
             else
                 match config.MaxNameLength with
-                | Some maxLength when name.Length > maxLength -> name |> PlayerNameTooLong |> fail
-                | _ -> PlayerName name |> ok
+                | Some maxLength when name.Length > maxLength -> name |> PlayerNameTooLong |> Error
+                | _ -> PlayerName name |> Ok
     }
 
     let validatePlayerNames players =
         if players |> List.isEmpty then
-            PlayerListEmpty |> fail
+            PlayerListEmpty |> Error
         else
             let duplicatePlayers =
                 players
@@ -35,15 +34,5 @@ module PlayerName =
                 |> List.map fst
 
             if duplicatePlayers |> List.isEmpty
-            then players |> ok
-            else duplicatePlayers |> List.map get |> DuplicatePlayers |> fail
-
-    let createPlayerNames names = monad {
-        let! config = Reader.ask
-        return
-            names
-            |> List.map create
-            |> List.map (flip Reader.run config)
-            |> Trial.sequence
-            |> Trial.bind validatePlayerNames
-    }
+            then players |> Ok
+            else duplicatePlayers |> List.map get |> DuplicatePlayers |> Error

@@ -109,9 +109,3 @@ let formatError error = monad {
         | RollAfterLastFrame ->
             "The player rolled past the last frame."
 }
-
-let printErrors errors =
-    errors
-    |> List.map formatError
-    |> sequence
-    |>> List.iter (printfn "%s")

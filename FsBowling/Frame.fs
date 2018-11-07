@@ -2,7 +2,6 @@
 
 open FSharpPlus
 open FSharpPlus.Data
-open Chessie.ErrorHandling
 
 type FrameState =
     | NotStarted
@@ -37,13 +36,11 @@ module Frame =
         ThirdRoll = None
     }
 
-    let create num = monad {
-        let! config = Reader.ask
-        return
+    let create num =
+        Reader.ask |>> (fun config ->
             if num > 0 && num <= config.NumberOfFrames
-            then { State = NotStarted; Number = num } |> ok
-            else num |> InvalidFrameNumber |> fail
-    }
+            then { State = NotStarted; Number = num } |> Ok
+            else num |> InvalidFrameNumber |> Error)
 
     let isFinished frame =
         match frame.State with
@@ -53,27 +50,23 @@ module Frame =
     let isLast frame =
         Reader.ask |>> (fun config -> frame.Number = config.NumberOfFrames)
 
-    let private rollForNotStarted score frame = monad {
-        let! config = Reader.ask
-        return
+    let private rollForNotStarted score frame =
+        Reader.ask |>> (fun config ->
             if score < config.NumberOfPins then
                 { frame with State = InProgress score }
             else
                 if frame.Number <> config.NumberOfFrames
                 then { frame with State = Strike }
-                else { frame with State = LastStrikeInProgress1 }
-    }
+                else { frame with State = LastStrikeInProgress1 })
     
-    let private rollForInProgress firstScore secondScore frame = monad {
-        let! config = Reader.ask
-        return
+    let private rollForInProgress firstScore secondScore frame =
+        Reader.ask |>> (fun config ->
             if (firstScore + secondScore) < config.NumberOfPins then
                 { frame with State = Open (firstScore, secondScore) }
             else
                 if frame.Number <> config.NumberOfFrames
                 then { frame with State = Spare firstScore }
-                else { frame with State = LastSpareInProgress firstScore }
-    }
+                else { frame with State = LastSpareInProgress firstScore })
     
     let private rollForFinished score frame =
         { State = InProgress score; Number = frame.Number + 1 } |> result
@@ -93,28 +86,28 @@ module Frame =
             let rollFun =
                 match frame.State with
                 | NotStarted ->
-                    rollForNotStarted |> ok
+                    rollForNotStarted |> Ok
                 | InProgress firstScore ->
                     let totalScore = score + firstScore
                     if totalScore <= config.NumberOfPins
-                    then rollForInProgress firstScore |> ok
-                    else InvalidScore totalScore |> fail
+                    then rollForInProgress firstScore |> Ok
+                    else InvalidScore totalScore |> Error
                 | Open _ when frame.Number < config.NumberOfFrames ->
-                    rollForFinished |> ok
+                    rollForFinished |> Ok
                 | Strike | Spare _ ->
-                    rollForFinished |> ok
+                    rollForFinished |> Ok
                 | LastStrikeInProgress1 ->
-                    rollForLastStrikeInProgress1 |> ok
+                    rollForLastStrikeInProgress1 |> Ok
                 | LastStrikeInProgress2 score ->
-                    rollForLastStrikeInProgress2 score |> ok
+                    rollForLastStrikeInProgress2 score |> Ok
                 | LastSpareInProgress firstScore ->
-                    rollForLastSpareInProgress firstScore |> ok
+                    rollForLastSpareInProgress firstScore |> Ok
                 | _ ->
-                    RollAfterLastFrame |> fail
+                    RollAfterLastFrame |> Error
 
-            return rollFun |> Trial.map (fun rollFun -> Reader.run (rollFun score frame) config)
+            return rollFun |>> (fun rollFun -> Reader.run (rollFun score frame) config)
         else
-            return InvalidScore score |> fail
+            return InvalidScore score |> Error
     }
 
     let getScores frames = monad {
