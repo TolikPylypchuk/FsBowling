@@ -47,7 +47,7 @@ module Frame =
 
     let create num =
         Reader.ask |>> (fun config ->
-            if num > 0 && num <= config.NumberOfFrames
+            if num > 0 && num <= (config |> Config.numberOfFrames)
             then { State = NotStarted; Number = num } |> Ok
             else num |> InvalidFrameNumber |> Error)
 
@@ -57,23 +57,23 @@ module Frame =
         | _ -> false
 
     let isLast frame =
-        Reader.ask |>> (fun config -> frame.Number = config.NumberOfFrames)
+        Reader.ask |>> Config.numberOfFrames |>> (fun numFrames -> frame.Number = numFrames)
 
     let private rollForNotStarted score frame =
         Reader.ask |>> (fun config ->
-            if score < config.NumberOfPins then
+            if score < (config |> Config.numberOfPins) then
                 { frame with State = InProgress score }
             else
-                if frame.Number <> config.NumberOfFrames
+                if frame.Number <> (config |> Config.numberOfFrames)
                 then { frame with State = Strike }
                 else { frame with State = LastStrikeInProgress1 })
     
     let private rollForInProgress firstScore secondScore frame =
         Reader.ask |>> (fun config ->
-            if (firstScore + secondScore) < config.NumberOfPins then
+            if (firstScore + secondScore) < (config |> Config.numberOfPins) then
                 { frame with State = Open (firstScore, secondScore) }
             else
-                if frame.Number <> config.NumberOfFrames
+                if frame.Number <> (config |> Config.numberOfFrames)
                 then { frame with State = Spare firstScore }
                 else { frame with State = LastSpareInProgress firstScore })
     
@@ -91,17 +91,17 @@ module Frame =
 
     let roll score frame = monad {
         let! config = Reader.ask
-        if score >= 0 && score <= config.NumberOfPins then
+        if score >= 0 && score <= (config |> Config.numberOfPins) then
             let rollFun =
                 match frame.State with
                 | NotStarted ->
                     rollForNotStarted |> Ok
                 | InProgress firstScore ->
                     let totalScore = score + firstScore
-                    if totalScore <= config.NumberOfPins
+                    if totalScore <= (config |> Config.numberOfPins)
                     then rollForInProgress firstScore |> Ok
                     else InvalidScore totalScore |> Error
-                | Open _ when frame.Number < config.NumberOfFrames ->
+                | Open _ when frame.Number < (config |> Config.numberOfFrames) ->
                     rollForFinished |> Ok
                 | Strike | Spare _ ->
                     rollForFinished |> Ok
@@ -120,7 +120,7 @@ module Frame =
     }
 
     let getScores frames = monad {
-        let! config = Reader.ask
+        let! numPins = Reader.ask |>> Config.numberOfPins
         return
             frames |> Seq.collect (fun frame -> seq {
                 yield!
@@ -132,19 +132,19 @@ module Frame =
                     | Open (firstScore, secondScore) ->
                         [ Some firstScore; Some secondScore ]
                     | Strike ->
-                        [ Some config.NumberOfPins; None ]
+                        [ Some numPins; None ]
                     | LastStrikeInProgress1 ->
-                        [ Some config.NumberOfPins; None; None ]
+                        [ Some numPins; None; None ]
                     | LastStrikeInProgress2 score ->
-                        [ Some config.NumberOfPins; Some score; None ]
+                        [ Some numPins; Some score; None ]
                     | LastStrike (firstScore, secondScore) ->
-                        [ Some config.NumberOfPins; Some firstScore; Some secondScore ]
+                        [ Some numPins; Some firstScore; Some secondScore ]
                     | Spare score ->
-                        [ Some score; Some (config.NumberOfPins - score) ]
+                        [ Some score; Some (numPins - score) ]
                     | LastSpareInProgress score ->
-                        [ Some score; Some (config.NumberOfPins - score) ]
+                        [ Some score; Some (numPins - score) ]
                     | LastSpare (firstScore, secondScore) ->
-                        [ Some firstScore; Some (config.NumberOfPins - firstScore); Some secondScore ]
+                        [ Some firstScore; Some (numPins - firstScore); Some secondScore ]
         })
     }
     
@@ -153,7 +153,7 @@ module Frame =
 
     let getTotalScores frames =
         let rec getTotalScores' (frameScores : FrameScore list) frames = monad {
-            let! config = Reader.ask
+            let! numPins = Reader.ask |>> Config.numberOfPins
             match frames with
             | [] -> return frameScores |> List.rev
             | frame :: otherFrames ->
@@ -172,38 +172,38 @@ module Frame =
                             FirstRoll = firstScore |> Some; SecondRoll = secondScore |> Some }
                     | Strike ->
                         { frameScore with
-                            Total = total + config.NumberOfPins + (scores |> Seq.truncate 2 |> Seq.fold (+) 0) |> Some
-                            FirstRoll = config.NumberOfPins |> Some }
+                            Total = total + numPins + (scores |> Seq.truncate 2 |> Seq.fold (+) 0) |> Some
+                            FirstRoll = numPins |> Some }
                     | Spare score ->
                         { frameScore with
-                            Total = total + config.NumberOfPins + (scores |> Seq.tryHead |> Option.defaultValue 0) |> Some
+                            Total = total + numPins + (scores |> Seq.tryHead |> Option.defaultValue 0) |> Some
                             FirstRoll = score |> Some
-                            SecondRoll = config.NumberOfPins - score |> Some }
+                            SecondRoll = numPins - score |> Some }
                     | LastStrikeInProgress1 ->
                         { frameScore with
-                            Total = total + config.NumberOfPins |> Some
-                            FirstRoll = config.NumberOfPins |> Some }
+                            Total = total + numPins |> Some
+                            FirstRoll = numPins |> Some }
                     | LastStrikeInProgress2 score ->
                         { frameScore with
-                            Total = total + config.NumberOfPins + score |> Some
-                            FirstRoll = config.NumberOfPins |> Some
+                            Total = total + numPins + score |> Some
+                            FirstRoll = numPins |> Some
                             SecondRoll = score |> Some }
                     | LastStrike (firstScore, secondScore) ->
                         { frameScore with
-                            Total = total + config.NumberOfPins + firstScore + secondScore |> Some
-                            FirstRoll = config.NumberOfPins |> Some
+                            Total = total + numPins + firstScore + secondScore |> Some
+                            FirstRoll = numPins |> Some
                             SecondRoll = firstScore |> Some
                             ThirdRoll = secondScore |> Some }
                     | LastSpareInProgress score ->
                         { frameScore with
-                            Total = total + config.NumberOfPins |> Some
+                            Total = total + numPins |> Some
                             FirstRoll = score |> Some
-                            SecondRoll = config.NumberOfPins - score |> Some }
+                            SecondRoll = numPins - score |> Some }
                     | LastSpare (firstScore, secondScore) ->
                         { frameScore with
-                            Total = total + config.NumberOfPins + secondScore |> Some
+                            Total = total + numPins + secondScore |> Some
                             FirstRoll = firstScore |> Some
-                            SecondRoll = config.NumberOfPins - firstScore |> Some
+                            SecondRoll = numPins - firstScore |> Some
                             ThirdRoll = secondScore |> Some }
 
                 return! otherFrames |> getTotalScores' (score :: frameScores)

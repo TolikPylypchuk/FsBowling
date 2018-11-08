@@ -69,7 +69,62 @@
 </member>
 <member name="T:FsBowling.ConfigError">
  <summary>
- Represents an error which may occur during the creating of the configuration.
+ Represents an error which may occur during the creation of the configuration.
+ </summary>
+</member>
+<member name="T:FsBowling.Config">
+ <summary>
+ Represents the configuration of a bowling game.
+ </summary>
+</member>
+<member name="T:FsBowling.PlayerName">
+ <summary>
+ Represents the name of a player.
+ </summary>
+</member>
+<member name="M:FsBowling.ConfigModule.create(System.Int32,System.Int32,Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.Int32})">
+ <summary>
+ Creates a configuration.
+ </summary>
+</member>
+<member name="P:FsBowling.ConfigModule.defaultConfig">
+ <summary>
+ The default game configuration.
+ </summary>
+</member>
+<member name="M:FsBowling.ConfigModule.maxPlayerCount(FsBowling.Config)">
+ <summary>
+ Returns the max player count, if any.
+ </summary>
+</member>
+<member name="M:FsBowling.ConfigModule.maxNameLength(FsBowling.Config)">
+ <summary>
+ Returns the max name length, if any.
+ </summary>
+</member>
+<member name="M:FsBowling.ConfigModule.numberOfFrames(FsBowling.Config)">
+ <summary>
+ Returns the number of frames.
+ </summary>
+</member>
+<member name="M:FsBowling.ConfigModule.numberOfPins(FsBowling.Config)">
+ <summary>
+ Returns the number of pins.
+ </summary>
+</member>
+<member name="M:FsBowling.PlayerNameModule.validatePlayerNames(Microsoft.FSharp.Collections.FSharpList{FsBowling.PlayerName})">
+ <summary>
+ Validates a list of players.
+ </summary>
+</member>
+<member name="M:FsBowling.PlayerNameModule.create(System.String)">
+ <summary>
+ Creates a player name from a string.
+ </summary>
+</member>
+<member name="M:FsBowling.PlayerNameModule.get(FsBowling.PlayerName)">
+ <summary>
+ Returns the name of a player.
  </summary>
 </member>
 </members>

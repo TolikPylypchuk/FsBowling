@@ -34,7 +34,7 @@ module Player =
             let frames = frame :: (reversedFrames |> List.tail)
 
             let result =
-                if frame |> Frame.isFinished && frame.Number <> config.NumberOfFrames
+                if frame |> Frame.isFinished && frame.Number <> (config |> Config.numberOfFrames)
                 then { State = NotStarted; Number = frame.Number + 1 } :: frames
                 else frames
                 |> List.rev
@@ -48,4 +48,4 @@ module Player =
     let isFinished player =
         Reader.ask |>> (fun config ->
             let frame = player |> lastFrame
-            frame.Number = config.NumberOfFrames && frame |> Frame.isFinished)
+            frame.Number = (config |> Config.numberOfFrames) && frame |> Frame.isFinished)

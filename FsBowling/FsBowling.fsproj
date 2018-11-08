@@ -9,9 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="BowlingError.fsi" />
-    <Compile Include="BowlingError.fs" />
+    <Compile Include="Error.fsi" />
+    <Compile Include="Error.fs" />
+    <Compile Include="Config.fsi" />
     <Compile Include="Config.fs" />
+    <Compile Include="PlayerName.fsi" />
     <Compile Include="PlayerName.fs" />
     <Compile Include="Frame.fs" />
     <Compile Include="Player.fs" />

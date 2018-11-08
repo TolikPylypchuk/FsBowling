@@ -19,7 +19,7 @@ module PlayerName =
             if name = String.Empty then
                 PlayerNameEmpty |> Error
             else
-                match config.MaxNameLength with
+                match config |> Config.maxNameLength with
                 | Some maxLength when name.Length > maxLength -> name |> PlayerNameTooLong |> Error
                 | _ -> PlayerName name |> Ok
     }
@@ -29,7 +29,7 @@ module PlayerName =
             if players |> List.isEmpty then
                 PlayerListEmpty |> Error
             else
-                match config.MaxPlayerCount with
+                match config |> Config.maxPlayerCount with
                 | Some count when players |> List.length > count ->
                     TooManyPlayers |> Error
                 | _ ->

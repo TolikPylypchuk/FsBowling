@@ -15,8 +15,8 @@ let readNumPlayers () =
     printf "Enter the number of players: "
 
     let rec readNumPlayers' () = monad {
-        let! config = Reader.ask
-        match readInt (), config.MaxPlayerCount with
+        let! maxPlayerCount = Reader.ask |>> Config.maxPlayerCount
+        match readInt (), maxPlayerCount with
             | Some num, None when num > 0 ->
                 return num
             | Some num, Some count when num > 0 && num <= count ->

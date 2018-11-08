@@ -16,11 +16,12 @@ let formatRoll score =
     if score = 0 then "- " else score |> string |> pad 2
 
 let formatScore isLastFrame score = monad {
-    let! config = Reader.ask
+    let! numPins = Reader.ask |>> Config.numberOfPins
+    
     return monad {
         let format roll =
             match roll with
-            | Some roll when roll = config.NumberOfPins -> "X "
+            | Some roll when roll = numPins -> "X "
             | Some roll -> roll |> formatRoll
             | None -> "  "
 
@@ -28,8 +29,8 @@ let formatScore isLastFrame score = monad {
 
         let secondRoll =
             match score.FirstRoll, score.SecondRoll with
-            | Some roll1, Some roll2 when roll1 + roll2 = config.NumberOfPins -> "/ "
-            | Some roll1, Some roll2 when roll1 = config.NumberOfPins && roll2 = config.NumberOfPins -> "X "
+            | Some roll1, Some roll2 when roll1 + roll2 = numPins -> "/ "
+            | Some roll1, Some roll2 when roll1 = numPins && roll2 = numPins -> "X "
             | _, Some roll -> roll |> formatRoll
             | _, None -> "  "
 
@@ -46,7 +47,9 @@ let formatPlayer player = monad {
     let! totalScores = player.Frames |> Frame.getTotalScores
 
     return monad {
-        do! addLine (player |> Player.name |> PlayerName.get) 
+        do! addLine (player |> Player.name |> PlayerName.get)
+
+        let numFrames = config |> Config.numberOfFrames
 
         let firstLine =
             totalScores
@@ -54,7 +57,7 @@ let formatPlayer player = monad {
                 score.Total
                 |> Option.map string
                 |> Option.defaultValue String.Empty
-                |> pad (if index + 1 = config.NumberOfFrames then 8 else 5))
+                |> pad (if index + 1 = numFrames then 8 else 5))
             |> String.concat "|"
 
         let intermediateLine = String.replicate (firstLine.Length + 2) "-"
@@ -65,7 +68,7 @@ let formatPlayer player = monad {
         
         let secondLine =
             totalScores
-            |> List.mapi (fun index -> formatScore (index + 1 = config.NumberOfFrames))
+            |> List.mapi (fun index -> formatScore (index + 1 = numFrames))
             |> sequence
             |> flip Reader.run config
             |> String.concat "|"
@@ -90,7 +93,7 @@ let formatError error = monad {
         | PlayerNameEmpty ->
             "The player's name is empty."
         | PlayerNameTooLong _ ->
-            sprintf "The name is too long. A player's name should not exceed %i characters." (config.MaxNameLength |> Option.defaultValue 0)
+            sprintf "The name is too long. A player's name should not exceed %i characters." (config |> Config.maxNameLength |> Option.defaultValue 0)
         | PlayerListEmpty ->
             "The player list is empty."
         | TooManyPlayers ->
@@ -106,7 +109,7 @@ let formatError error = monad {
                 |> String.concat ", "
                 |> sprintf "The names %s are duplicated."
         | InvalidScore score ->
-            sprintf "%i is an invalid score. A score of a frame must be less than or equal to %i." score config.NumberOfPins
+            sprintf "%i is an invalid score. A score of a frame must be less than or equal to %i." score (config |> Config.numberOfPins)
         | RollAfterLastFrame ->
             "The player rolled past the last frame."
 }

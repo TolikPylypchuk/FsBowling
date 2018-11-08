@@ -1,7 +1,7 @@
 ﻿namespace FsBowling
 
 /// <summary>
-/// Represents an error which may occur during the creating of the configuration.
+/// Represents an error which may occur during the creation of the configuration.
 /// </summary>
 type ConfigError =
 

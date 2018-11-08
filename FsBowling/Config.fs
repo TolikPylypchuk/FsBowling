@@ -10,6 +10,7 @@ type Config = {
     MaxPlayerCount : int option
 }
 
+[<RequireQualifiedAccess>]
 module Config =
 
     let numberOfPins { NumberOfPins = num } = num
@@ -24,17 +25,17 @@ module Config =
         MaxPlayerCount = Some 6
     }
 
-    let private positiveOrElse error num =
+    let positiveOrElse error num =
         if num > 0 then num |> Success else [ error num ] |> Failure
 
-    let private forOption validationFunc = Option.map Success >> Option.map (Validation.bind validationFunc) >> sequence
+    let forOption validationFunc = Option.map Success >> Option.map (Validation.bind validationFunc) >> sequence
 
-    let private validateNumPins = positiveOrElse InvalidNumberOfPins
-    let private validateNumFrames = positiveOrElse InvalidNumberOfFrames
-    let private validateMaxNameLength = positiveOrElse InvalidMaxNameLength |> forOption
-    let private validateMaxPlayerCount = positiveOrElse InvalidMaxPlayerCount |> forOption
+    let validateNumPins = positiveOrElse InvalidNumberOfPins
+    let validateNumFrames = positiveOrElse InvalidNumberOfFrames
+    let validateMaxNameLength = positiveOrElse InvalidMaxNameLength |> forOption
+    let validateMaxPlayerCount = positiveOrElse InvalidMaxPlayerCount |> forOption
 
-    let private doCreate numPins numFrames maxNameLength maxPlayerCount = {
+    let doCreate numPins numFrames maxNameLength maxPlayerCount = {
         NumberOfPins = numPins
         NumberOfFrames = numFrames
         MaxNameLength = maxNameLength
