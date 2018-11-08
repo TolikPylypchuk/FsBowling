@@ -47,5 +47,30 @@
  Represents an error which may occur during the calculation of a bowling score.
  </summary>
 </member>
+<member name="T:FsBowling.ConfigError.InvalidMaxPlayerCount">
+ <summary>
+ The max player count is not positive.
+ </summary>
+</member>
+<member name="T:FsBowling.ConfigError.InvalidMaxNameLength">
+ <summary>
+ The max name length is not positive.
+ </summary>
+</member>
+<member name="T:FsBowling.ConfigError.InvalidNumberOfFrames">
+ <summary>
+ The number of frames is not positive.
+ </summary>
+</member>
+<member name="T:FsBowling.ConfigError.InvalidNumberOfPins">
+ <summary>
+ The number of pins is not positive.
+ </summary>
+</member>
+<member name="T:FsBowling.ConfigError">
+ <summary>
+ Represents an error which may occur during the creating of the configuration.
+ </summary>
+</member>
 </members>
 </doc>

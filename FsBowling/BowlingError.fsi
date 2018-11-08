@@ -1,6 +1,31 @@
 ﻿namespace FsBowling
 
 /// <summary>
+/// Represents an error which may occur during the creating of the configuration.
+/// </summary>
+type ConfigError =
+
+    /// <summary>
+    /// The number of pins is not positive.
+    /// </summary>
+    | InvalidNumberOfPins of int
+
+    /// <summary>
+    /// The number of frames is not positive.
+    /// </summary>
+    | InvalidNumberOfFrames of int
+    
+    /// <summary>
+    /// The max name length is not positive.
+    /// </summary>
+    | InvalidMaxNameLength of int
+    
+    /// <summary>
+    /// The max player count is not positive.
+    /// </summary>
+    | InvalidMaxPlayerCount of int
+
+/// <summary>
 /// Represents an error which may occur during the calculation of a bowling score.
 /// </summary>
 type BowlingError =
