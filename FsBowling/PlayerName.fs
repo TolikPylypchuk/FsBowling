@@ -6,6 +6,7 @@ open FSharpPlus.Data
 
 type PlayerName = PlayerName of string
 
+[<RequireQualifiedAccess>]
 module PlayerName =
     
     let get (PlayerName name) = name

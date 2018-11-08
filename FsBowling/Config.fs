@@ -9,10 +9,10 @@ type Config = {
 
 module Config =
 
-    let getNumberOfPins { NumberOfPins = num } = num
-    let NumberOfFrames { NumberOfFrames = num } = num
-    let getMaxNameLength { MaxNameLength = length } = length
-    let getMaxPlayerCount { MaxPlayerCount = count } = count
+    let numberOfPins { NumberOfPins = num } = num
+    let numberOfFrames { NumberOfFrames = num } = num
+    let maxNameLength { MaxNameLength = length } = length
+    let maxPlayerCount { MaxPlayerCount = count } = count
 
     let defaultConfig = {
         NumberOfPins = 10

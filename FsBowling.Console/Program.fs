@@ -3,15 +3,12 @@
 open FSharpPlus
 open FSharpPlus.Data
 
-open Input
-open Output
-
 let rec createGame () = monad {
-    let! players = inputPlayers ()
+    let! players = Input.readPlayers ()
     match! players |> Game.create with
     | Ok game -> return game
     | Error error ->
-        do! error |> formatError |>> printfn "%s"
+        do! error |> Output.formatError |>> printfn "%s"
         return! createGame ()
 }
 
@@ -20,13 +17,13 @@ let rec play game = monad {
     if isGameFinished then
         return 0
     else
-        match! game |> Game.roll (game |> inputRoll) with
+        match! game |> Game.roll (game |> Input.readRoll) with
         | Ok game ->
-            let! formattedGame = game |> formatGame
+            let! formattedGame = game |> Output.formatGame
             printfn "%s" formattedGame
             return! play game
         | Error error ->
-            do! error |> formatError |>> printfn "%s"
+            do! error |> Output.formatError |>> printfn "%s"
             printfn ""
             return! play game
 }

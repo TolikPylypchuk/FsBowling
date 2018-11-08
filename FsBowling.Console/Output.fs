@@ -1,4 +1,5 @@
-﻿module FsBowling.Output
+﻿[<RequireQualifiedAccess>]
+module FsBowling.Output
 
 open System
 open FSharpPlus
@@ -45,7 +46,7 @@ let formatPlayer player = monad {
     let! totalScores = player.Frames |> Frame.getTotalScores
 
     return monad {
-        do! addLine (player |> Player.getName) 
+        do! addLine (player |> Player.name |> PlayerName.get) 
 
         let firstLine =
             totalScores

@@ -8,17 +8,18 @@ type Player = {
     Frames : Frame list
 }
 
+[<RequireQualifiedAccess>]
 module Player =
     
+    let name { Name = name } = name
+    let frames { Frames = frames } = frames
+
     let create name =
         Frame.create 1
         |>> (map (fun frame -> {
                 Name = name
                 Frames = [ frame ]
             }))
-
-    let getName player =
-        player.Name |> PlayerName.get
 
     let roll score player =
         Reader.ask |>> (fun config -> monad {

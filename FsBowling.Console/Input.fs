@@ -1,21 +1,20 @@
-﻿module FsBowling.Input
+﻿[<RequireQualifiedAccess>]
+module FsBowling.Input
 
 open System
 open FSharpPlus
 open FSharpPlus.Data
 
-open Output
+let private read = Console.ReadLine
 
-let read = Console.ReadLine
-
-let readInt () =
+let private readInt () =
     let success, result = Console.ReadLine () |> Int32.TryParse
     if success then Some result else None
 
-let inputNumPlayers () =
+let readNumPlayers () =
     printf "Enter the number of players: "
 
-    let rec inputNumPlayers' () = monad {
+    let rec readNumPlayers' () = monad {
         let! config = Reader.ask
         match readInt (), config.MaxPlayerCount with
             | Some num, None when num > 0 ->
@@ -24,33 +23,33 @@ let inputNumPlayers () =
                 return num
             | _, Some count ->
                 printf "\nThe number of players must be positive and at most %i. Please try again: " count
-                return! inputNumPlayers' ()
+                return! readNumPlayers' ()
             | _, None ->
                 printf "\nThe number of players must be positive. Please try again: "
-                return! inputNumPlayers' ()
+                return! readNumPlayers' ()
     }
 
-    inputNumPlayers' ()
+    readNumPlayers' ()
 
-let inputPlayer index =
+let readPlayer index =
     printf "\nEnter the name of player #%i: " <| index + 1
 
-    let rec inputPlayer' () = monad {
+    let rec readPlayer' () = monad {
         match! read () |> PlayerName.create with
         | Ok player -> return player
         | Error error ->
             printfn "\nThe player name is invalid."
-            do! error |> formatError |>> printfn "%s"
+            do! error |> Output.formatError |>> printfn "%s"
             printf "\nPlease try again: "
-            return! inputPlayer' ()
+            return! readPlayer' ()
     }
 
-    inputPlayer' ()
+    readPlayer' ()
 
-let rec inputPlayers () = monad {
-    let! numPlayers = inputNumPlayers ()
+let rec readPlayers () = monad {
+    let! numPlayers = readNumPlayers ()
     let! names =
-        inputPlayer
+        readPlayer
         |> List.init numPlayers
         |> sequence
 
@@ -60,21 +59,21 @@ let rec inputPlayers () = monad {
         return players
     | Error error ->
         printfn "\nThe player list is invalid."
-        do! error |> formatError |>> printfn "%s"
+        do! error |> Output.formatError |>> printfn "%s"
         printfn "Please try again.\n"
-        return! inputPlayers ()
+        return! readPlayers ()
 }
 
-let inputRoll game =
-    printf "%s rolls with score: " (game |> Game.currentPlayer |> Player.getName)
+let readRoll game =
+    printf "%s rolls with score: " (game |> Game.currentPlayer |> Player.name |> PlayerName.get)
 
-    let rec inputRoll' () =
+    let rec readRoll' () =
         match readInt () with
         | Some score when score >= 0 ->
             printfn ""
             score
         | _ ->
             printf "The score must be a non-negative number. Please try again: "
-            inputRoll' ()
+            readRoll' ()
 
-    inputRoll' ()
+    readRoll' ()
