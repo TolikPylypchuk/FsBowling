@@ -1,5 +1,7 @@
 ﻿namespace FsBowling
 
+open FSharpPlus.Data
+
 type ConfigError =
     | InvalidNumberOfPins of int
     | InvalidNumberOfFrames of int
@@ -12,6 +14,6 @@ type BowlingError =
     | PlayerNameTooLong of string
     | PlayerListEmpty
     | TooManyPlayers
-    | DuplicatePlayers of string list
+    | DuplicatePlayers of NonEmptyList<string>
     | InvalidScore of int
     | RollAfterLastFrame

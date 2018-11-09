@@ -77,6 +77,11 @@
  Represents the configuration of a bowling game.
  </summary>
 </member>
+<member name="T:FsBowling.ValidatedPlayerNames">
+ <summary>
+ Represents a valid list of player names.
+ </summary>
+</member>
 <member name="T:FsBowling.PlayerName">
  <summary>
  Represents the name of a player.
@@ -150,6 +155,11 @@
 <member name="M:FsBowling.PlayerNameModule.create(System.String)">
  <summary>
  Creates a player name from a string.
+ </summary>
+</member>
+<member name="M:FsBowling.PlayerNameModule.getNames(FsBowling.ValidatedPlayerNames)">
+ <summary>
+ Returns a list of valid names.
  </summary>
 </member>
 <member name="M:FsBowling.PlayerNameModule.get(FsBowling.PlayerName)">
@@ -277,7 +287,7 @@
  Creates a game with specified players.
  </summary>
 </member>
-<member name="M:FsBowling.GameModule.create(Microsoft.FSharp.Collections.FSharpList{FsBowling.PlayerName})">
+<member name="M:FsBowling.GameModule.create(FsBowling.ValidatedPlayerNames)">
  <summary>
  Creates a game with specified players.
  </summary>

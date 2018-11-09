@@ -4,7 +4,7 @@ open FSharpPlus
 open FSharpPlus.Data
 
 type Game = {
-    Players : Player list
+    Players : NonEmptyList<Player>
 }
 
 module Game =
@@ -14,7 +14,8 @@ module Game =
     let create playerNames =
         let players =
             playerNames
-            |> List.map Player.create
+            |> PlayerName.getNames
+            |>> Player.create
             |> sequence
 
         players
@@ -22,21 +23,23 @@ module Game =
         |>> map (fun players -> { Players = players })
 
     let currentPlayer game =
+        let players = game.Players |> NonEmptyList.toList
+
         let currentFrameNumber =
-            game.Players
+            players
             |> List.head
             |> Player.lastFrame
             |> Frame.number
 
-        game.Players
+        players
         |> List.tryFind (Player.lastFrame >> Frame.number >> (<>) currentFrameNumber)
-        |> Option.orElse (game.Players |> List.tryFind (Player.lastFrame >> Frame.isFinished >> not))
-        |> Option.defaultValue (game.Players |> List.head)
+        |> Option.orElse (players |> List.tryFind (Player.lastFrame >> Frame.isFinished >> not))
+        |> Option.defaultValue (players |> List.head)
 
     let roll score game =
         let players =
             game.Players
-            |> List.map (fun player ->
+            |> map (fun player ->
                 if (player |> Player.name) = (game |> currentPlayer |> Player.name)
                 then player |> Player.roll score
                 else player |> Ok |> result)
@@ -48,5 +51,6 @@ module Game =
 
     let isFinished game =
         game.Players
+        |> NonEmptyList.toList
         |> List.last
         |> Player.isFinished

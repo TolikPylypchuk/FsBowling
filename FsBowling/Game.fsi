@@ -15,12 +15,12 @@ module Game =
     /// <summary>
     /// Returns a game's player list.
     /// </summary>
-    val players : Game -> Player list
+    val players : Game -> NonEmptyList<Player>
     
     /// <summary>
     /// Creates a game with specified players.
     /// </summary>
-    val create : PlayerName list -> Reader<Config, Result<Game, BowlingError>>
+    val create : ValidatedPlayerNames -> Reader<Config, Result<Game, BowlingError>>
     
     /// <summary>
     /// Creates a game with specified players.

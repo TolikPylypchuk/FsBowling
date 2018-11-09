@@ -5,7 +5,7 @@ open FSharpPlus.Data
 
 type Player = {
     Name : PlayerName
-    Frames : Frame list
+    Frames : NonEmptyList<Frame>
 }
 
 [<RequireQualifiedAccess>]
@@ -18,12 +18,12 @@ module Player =
         Frame.create 1
         |>> (map (fun frame -> {
                 Name = name
-                Frames = [ frame ]
+                Frames = frame |> NonEmptyList.singleton
             }))
 
     let roll score player =
         Reader.ask |>> (fun config -> monad {
-            let reversedFrames = player.Frames |> List.rev
+            let reversedFrames = player.Frames |> NonEmptyList.toList |> List.rev
 
             let! frame =
                 reversedFrames
@@ -42,11 +42,11 @@ module Player =
                 else frames |> Ok
                 |>> List.rev
             
-            return { player with Frames = result }
+            return { player with Frames = NonEmptyList.create result.Head result.Tail }
         })
 
     let lastFrame player =
-        player.Frames |> List.last
+        player.Frames |> NonEmptyList.toList |> List.last
 
     let isFinished player =
         Reader.ask |>> (fun config ->

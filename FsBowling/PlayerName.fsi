@@ -8,6 +8,11 @@ open FSharpPlus.Data
 type PlayerName
 
 /// <summary>
+/// Represents a valid list of player names.
+/// </summary>
+type ValidatedPlayerNames
+
+/// <summary>
 /// Contains functions to create and manipulate players' names.
 /// </summary>
 module PlayerName =
@@ -16,6 +21,11 @@ module PlayerName =
     /// Returns the name of a player.
     /// </summary>
     val get : PlayerName -> string
+    
+    /// <summary>
+    /// Returns a list of valid names.
+    /// </summary>
+    val getNames : ValidatedPlayerNames -> NonEmptyList<PlayerName>
 
     /// <summary>
     /// Creates a player name from a string.
@@ -25,4 +35,4 @@ module PlayerName =
     /// <summary>
     /// Validates a list of players.
     /// </summary>
-    val validatePlayerNames : PlayerName list -> Reader<Config, Result<PlayerName list, BowlingError>>
+    val validatePlayerNames : PlayerName list -> Reader<Config, Result<ValidatedPlayerNames, BowlingError>>

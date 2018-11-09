@@ -1,5 +1,7 @@
 ﻿namespace FsBowling
 
+open FSharpPlus.Data
+
 /// <summary>
 /// Represents an error which may occur during the creation of the configuration.
 /// </summary>
@@ -58,7 +60,7 @@ type BowlingError =
     /// <summary>
     /// The list of players contains duplicate names.
     /// </summary>
-    | DuplicatePlayers of string list
+    | DuplicatePlayers of NonEmptyList<string>
     
     /// <summary>
     /// The score is invalid.

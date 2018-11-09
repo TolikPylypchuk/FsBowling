@@ -20,7 +20,7 @@ module Player =
     /// <summary>
     /// Returns a list of player's frames.
     /// </summary>
-    val frames : Player -> Frame list
+    val frames : Player -> NonEmptyList<Frame>
     
     /// <summary>
     /// Creates a player with a specified name.

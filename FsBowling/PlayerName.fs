@@ -6,10 +6,14 @@ open FSharpPlus.Data
 
 type PlayerName = PlayerName of string
 
+type ValidatedPlayerNames = ValidatedPlayerNames of NonEmptyList<PlayerName>
+
 [<RequireQualifiedAccess>]
 module PlayerName =
     
     let get (PlayerName name) = name
+
+    let getNames (ValidatedPlayerNames names) = names
 
     let create (name : string) = monad {
         let name = name.Trim()
@@ -39,6 +43,8 @@ module PlayerName =
                         |> List.filter (snd >> List.length >> (<>) 1)
                         |> List.map fst
 
+                    let makeNonEmpty (lst : 'a list) = NonEmptyList.create lst.Head lst.Tail 
+
                     if duplicatePlayers |> List.isEmpty
-                    then players |> Ok
-                    else duplicatePlayers |> List.map get |> DuplicatePlayers |> Error)
+                    then players |> makeNonEmpty |> ValidatedPlayerNames |> Ok
+                    else duplicatePlayers |> List.map get |> makeNonEmpty |> DuplicatePlayers |> Error)

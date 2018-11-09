@@ -44,7 +44,7 @@ let formatScore isLastFrame score = monad {
 
 let formatPlayer player = monad {
     let! config = Reader.ask
-    let! totalScores = player |> Player.frames |> Frame.getTotalScores
+    let! totalScores = player |> Player.frames |> NonEmptyList.toList |> Frame.getTotalScores
 
     return monad {
         do! addLine (player |> Player.name |> PlayerName.get)
@@ -81,7 +81,7 @@ let formatPlayer player = monad {
 let formatGame game =
     game
     |> Game.players
-    |> List.map formatPlayer
+    |> NonEmptyList.map formatPlayer
     |> sequence
     |>> String.concat "\n"
 
@@ -100,13 +100,12 @@ let formatError error = monad {
         | TooManyPlayers ->
             "The player list is empty."
         | DuplicatePlayers players ->
-            match players with
-            | [ player ] ->
-                sprintf "The name %s is duplicated." player
+            match players.Tail with
             | [] ->
-                "An error occured - no names are duplicated but the app thinks they are."
+                sprintf "The name %s is duplicated." players.Head
             | _ ->
                 players
+                |> NonEmptyList.toList
                 |> String.concat ", "
                 |> sprintf "The names %s are duplicated."
         | InvalidScore score ->
