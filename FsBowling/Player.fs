@@ -32,13 +32,16 @@ module Player =
                 |> Reader.run <| config
 
             let frames = frame :: (reversedFrames |> List.tail)
+            let number = frame |> Frame.number
 
-            let result =
-                if frame |> Frame.isFinished && frame.Number <> (config |> Config.numberOfFrames)
-                then { State = NotStarted; Number = frame.Number + 1 } :: frames
-                else frames
-                |> List.rev
-        
+            let! result =
+                if frame |> Frame.isFinished && number <> (config |> Config.numberOfFrames)
+                then
+                    let result = number + 1 |> Frame.create |> Reader.run <| config
+                    result |>> fun frame -> frame :: frames
+                else frames |> Ok
+                |>> List.rev
+            
             return { player with Frames = result }
         })
 
@@ -48,4 +51,4 @@ module Player =
     let isFinished player =
         Reader.ask |>> (fun config ->
             let frame = player |> lastFrame
-            frame.Number = (config |> Config.numberOfFrames) && frame |> Frame.isFinished)
+            (frame |> Frame.number) = (config |> Config.numberOfFrames) && frame |> Frame.isFinished)

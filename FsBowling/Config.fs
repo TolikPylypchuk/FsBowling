@@ -28,7 +28,8 @@ module Config =
     let positiveOrElse error num =
         if num > 0 then num |> Success else [ error num ] |> Failure
 
-    let forOption validationFunc = Option.map Success >> Option.map (Validation.bind validationFunc) >> sequence
+    let forOption validationFunc =
+        Option.map Success >> Option.map (Validation.bind validationFunc) >> sequence
 
     let validateNumPins = positiveOrElse InvalidNumberOfPins
     let validateNumFrames = positiveOrElse InvalidNumberOfFrames

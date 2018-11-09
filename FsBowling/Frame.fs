@@ -38,7 +38,7 @@ module Frame =
     let secondRollScore { SecondRoll = roll } = roll
     let thirdRollScore { ThirdRoll = roll } = roll
     
-    let private frameScore = {
+    let frameScore = {
         Total = None
         FirstRoll = None
         SecondRoll = None
@@ -59,7 +59,7 @@ module Frame =
     let isLast frame =
         Reader.ask |>> Config.numberOfFrames |>> (fun numFrames -> frame.Number = numFrames)
 
-    let private rollForNotStarted score frame =
+    let rollForNotStarted score frame =
         Reader.ask |>> (fun config ->
             if score < (config |> Config.numberOfPins) then
                 { frame with State = InProgress score }
@@ -68,7 +68,7 @@ module Frame =
                 then { frame with State = Strike }
                 else { frame with State = LastStrikeInProgress1 })
     
-    let private rollForInProgress firstScore secondScore frame =
+    let rollForInProgress firstScore secondScore frame =
         Reader.ask |>> (fun config ->
             if (firstScore + secondScore) < (config |> Config.numberOfPins) then
                 { frame with State = Open (firstScore, secondScore) }
@@ -77,16 +77,16 @@ module Frame =
                 then { frame with State = Spare firstScore }
                 else { frame with State = LastSpareInProgress firstScore })
     
-    let private rollForFinished score frame =
+    let rollForFinished score frame =
         { State = InProgress score; Number = frame.Number + 1 } |> result
 
-    let private rollForLastStrikeInProgress1 score frame =
+    let rollForLastStrikeInProgress1 score frame =
         { frame with State = LastStrikeInProgress2 score } |> result
         
-    let private rollForLastStrikeInProgress2 firstScore secondScore frame =
+    let rollForLastStrikeInProgress2 firstScore secondScore frame =
         { frame with State = LastStrike (firstScore, secondScore) } |> result
         
-    let private rollForLastSpareInProgress firstScore secondScore frame =
+    let rollForLastSpareInProgress firstScore secondScore frame =
         { frame with State = LastSpare (firstScore, secondScore) } |> result
 
     let roll score frame = monad {

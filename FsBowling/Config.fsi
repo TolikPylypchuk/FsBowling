@@ -7,6 +7,9 @@ open FSharpPlus.Data
 /// </summary>
 type Config
 
+/// <summary>
+/// Contains functions and values to create and manipulate configurations of games.
+/// </summary>
 module Config =
     
     /// <summary>

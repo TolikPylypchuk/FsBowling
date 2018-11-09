@@ -25,10 +25,10 @@ let formatScore isLastFrame score = monad {
             | Some roll -> roll |> formatRoll
             | None -> "  "
 
-        do! add <| format score.FirstRoll
+        do! add <| format (score |> Frame.firstRollScore)
 
         let secondRoll =
-            match score.FirstRoll, score.SecondRoll with
+            match score |> Frame.firstRollScore, score |> Frame.secondRollScore with
             | Some roll1, Some roll2 when roll1 + roll2 = numPins -> "/ "
             | Some roll1, Some roll2 when roll1 = numPins && roll2 = numPins -> "X "
             | _, Some roll -> roll |> formatRoll
@@ -38,13 +38,13 @@ let formatScore isLastFrame score = monad {
 
         if isLastFrame then
             do! add "|"
-            do! add <| format score.ThirdRoll
+            do! add <| format (score |> Frame.thirdRollScore)
     } |> Writer.exec
 }
 
 let formatPlayer player = monad {
     let! config = Reader.ask
-    let! totalScores = player.Frames |> Frame.getTotalScores
+    let! totalScores = player |> Player.frames |> Frame.getTotalScores
 
     return monad {
         do! addLine (player |> Player.name |> PlayerName.get)
@@ -53,14 +53,14 @@ let formatPlayer player = monad {
 
         let firstLine =
             totalScores
-            |> List.mapi (fun index score ->
-                score.Total
-                |> Option.map string
-                |> Option.defaultValue String.Empty
-                |> pad (if index + 1 = numFrames then 8 else 5))
+            |> List.mapi (fun index ->
+                Frame.totalScore
+                >> Option.map string
+                >> Option.defaultValue String.Empty
+                >> pad (if index + 1 = numFrames then 8 else 5))
             |> String.concat "|"
 
-        let intermediateLine = String.replicate (firstLine.Length + 2) "-"
+        let intermediateLine = String.replicate (firstLine |> String.length |> (+) 2) "-"
         
         do! addLine intermediateLine
         do! addLine <| "|" + firstLine + "|"
@@ -79,7 +79,8 @@ let formatPlayer player = monad {
 }
     
 let formatGame game =
-    game.Players
+    game
+    |> Game.players
     |> List.map formatPlayer
     |> sequence
     |>> String.concat "\n"

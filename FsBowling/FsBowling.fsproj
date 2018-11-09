@@ -15,8 +15,11 @@
     <Compile Include="Config.fs" />
     <Compile Include="PlayerName.fsi" />
     <Compile Include="PlayerName.fs" />
+    <Compile Include="Frame.fsi" />
     <Compile Include="Frame.fs" />
+    <Compile Include="Player.fsi" />
     <Compile Include="Player.fs" />
+    <Compile Include="Game.fsi" />
     <Compile Include="Game.fs" />
   </ItemGroup>
 

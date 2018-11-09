@@ -7,6 +7,9 @@ open FSharpPlus.Data
 /// </summary>
 type PlayerName
 
+/// <summary>
+/// Contains functions to create and manipulate players' names.
+/// </summary>
 module PlayerName =
 
     /// <summary>

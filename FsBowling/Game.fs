@@ -8,6 +8,8 @@ type Game = {
 }
 
 module Game =
+
+    let players { Players = players } = players
     
     let create playerNames =
         let players =
@@ -24,7 +26,7 @@ module Game =
             game.Players
             |> List.head
             |> Player.lastFrame
-            |> fun frame -> frame.Number
+            |> Frame.number
 
         game.Players
         |> List.tryFind (Player.lastFrame >> Frame.number >> (<>) currentFrameNumber)
@@ -35,7 +37,7 @@ module Game =
         let players =
             game.Players
             |> List.map (fun player ->
-                if player.Name = (game |> currentPlayer).Name
+                if (player |> Player.name) = (game |> currentPlayer |> Player.name)
                 then player |> Player.roll score
                 else player |> Ok |> result)
             |> sequence

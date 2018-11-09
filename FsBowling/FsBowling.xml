@@ -82,6 +82,31 @@
  Represents the name of a player.
  </summary>
 </member>
+<member name="T:FsBowling.FrameScore">
+ <summary>
+ Represents a frame score.
+ </summary>
+</member>
+<member name="T:FsBowling.Frame">
+ <summary>
+ Represents a frame.
+ </summary>
+</member>
+<member name="T:FsBowling.FrameState">
+ <summary>
+ Represents the state of a frame.
+ </summary>
+</member>
+<member name="T:FsBowling.Player">
+ <summary>
+ Represents a player.
+ </summary>
+</member>
+<member name="T:FsBowling.Game">
+ <summary>
+ Represents a game of bowling.
+ </summary>
+</member>
 <member name="M:FsBowling.ConfigModule.create(System.Int32,System.Int32,Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.Int32})">
  <summary>
  Creates a configuration.
@@ -112,6 +137,11 @@
  Returns the number of pins.
  </summary>
 </member>
+<member name="T:FsBowling.ConfigModule">
+ <summary>
+ Contains functions and values to create and manipulate configurations of games.
+ </summary>
+</member>
 <member name="M:FsBowling.PlayerNameModule.validatePlayerNames(Microsoft.FSharp.Collections.FSharpList{FsBowling.PlayerName})">
  <summary>
  Validates a list of players.
@@ -125,6 +155,141 @@
 <member name="M:FsBowling.PlayerNameModule.get(FsBowling.PlayerName)">
  <summary>
  Returns the name of a player.
+ </summary>
+</member>
+<member name="T:FsBowling.PlayerNameModule">
+ <summary>
+ Contains functions to create and manipulate players' names.
+ </summary>
+</member>
+<member name="M:FsBowling.FrameModule.getTotalScores(Microsoft.FSharp.Collections.FSharpList{FsBowling.Frame})">
+ <summary>
+ Returns a list of scores of frames.
+ </summary>
+</member>
+<member name="M:FsBowling.FrameModule.getScores(System.Collections.Generic.IEnumerable{FsBowling.Frame})">
+ <summary>
+ Returns a sequence of scores of rolls.
+ </summary>
+</member>
+<member name="M:FsBowling.FrameModule.roll(System.Int32,FsBowling.Frame)">
+ <summary>
+ Calculates a new frame state based on the score of a roll.
+ </summary>
+</member>
+<member name="M:FsBowling.FrameModule.isLast(FsBowling.Frame)">
+ <summary>
+ Determines whether a frame is the last frame.
+ </summary>
+</member>
+<member name="M:FsBowling.FrameModule.isFinished(FsBowling.Frame)">
+ <summary>
+ Determines whether a frame is finished.
+ </summary>
+</member>
+<member name="M:FsBowling.FrameModule.create(System.Int32)">
+ <summary>
+ Creates a not started frame with a specified number.
+ </summary>
+</member>
+<member name="M:FsBowling.FrameModule.thirdRollScore(FsBowling.FrameScore)">
+ <summary>
+ Returns a frame score's third roll score.
+ </summary>
+</member>
+<member name="M:FsBowling.FrameModule.secondRollScore(FsBowling.FrameScore)">
+ <summary>
+ Returns a frame score's second roll score.
+ </summary>
+</member>
+<member name="M:FsBowling.FrameModule.firstRollScore(FsBowling.FrameScore)">
+ <summary>
+ Returns a frame score's first roll score.
+ </summary>
+</member>
+<member name="M:FsBowling.FrameModule.totalScore(FsBowling.FrameScore)">
+ <summary>
+ Returns a frame score's total score.
+ </summary>
+</member>
+<member name="M:FsBowling.FrameModule.number(FsBowling.Frame)">
+ <summary>
+ Returns a frame's number.
+ </summary>
+</member>
+<member name="M:FsBowling.FrameModule.state(FsBowling.Frame)">
+ <summary>
+ Returns a frame's state.
+ </summary>
+</member>
+<member name="T:FsBowling.FrameModule">
+ <summary>
+ Contains functions to create and manipulate frames, their states and scores.
+ </summary>
+</member>
+<member name="M:FsBowling.PlayerModule.isFinished(FsBowling.Player)">
+ <summary>
+ Determines whether a player has finished playing.
+ </summary>
+</member>
+<member name="M:FsBowling.PlayerModule.lastFrame(FsBowling.Player)">
+ <summary>
+ Returns the last frame of a player.
+ </summary>
+</member>
+<member name="M:FsBowling.PlayerModule.roll(System.Int32,FsBowling.Player)">
+ <summary>
+ Calculates a new list of player's frames based on the score of a roll.
+ </summary>
+</member>
+<member name="M:FsBowling.PlayerModule.create(FsBowling.PlayerName)">
+ <summary>
+ Creates a player with a specified name.
+ </summary>
+</member>
+<member name="M:FsBowling.PlayerModule.frames(FsBowling.Player)">
+ <summary>
+ Returns a list of player's frames.
+ </summary>
+</member>
+<member name="M:FsBowling.PlayerModule.name(FsBowling.Player)">
+ <summary>
+ Returns a player's name.
+ </summary>
+</member>
+<member name="T:FsBowling.PlayerModule">
+ <summary>
+ Contains functions to create and manipulate players.
+ </summary>
+</member>
+<member name="M:FsBowling.GameModule.isFinished(FsBowling.Game)">
+ <summary>
+ Determines whether the game is finished.
+ </summary>
+</member>
+<member name="M:FsBowling.GameModule.roll(System.Int32,FsBowling.Game)">
+ <summary>
+ Calculates the next game state based on the score of a roll.
+ </summary>
+</member>
+<member name="M:FsBowling.GameModule.currentPlayer(FsBowling.Game)">
+ <summary>
+ Creates a game with specified players.
+ </summary>
+</member>
+<member name="M:FsBowling.GameModule.create(Microsoft.FSharp.Collections.FSharpList{FsBowling.PlayerName})">
+ <summary>
+ Creates a game with specified players.
+ </summary>
+</member>
+<member name="M:FsBowling.GameModule.players(FsBowling.Game)">
+ <summary>
+ Returns a game's player list.
+ </summary>
+</member>
+<member name="T:FsBowling.GameModule">
+ <summary>
+ Contains functions to create and manipulate bowling games.
  </summary>
 </member>
 </members>
