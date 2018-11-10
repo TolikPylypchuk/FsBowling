@@ -19,8 +19,7 @@ let rec play game = monad {
     else
         match! game |> Game.roll (game |> Input.readRoll) with
         | Ok game ->
-            let! formattedGame = game |> Output.formatGame
-            printfn "%s" formattedGame
+            do! game |> Output.formatGame |>> printfn "%s"
             return! play game
         | Error error ->
             do! error |> Output.formatError |>> printfn "%s"

@@ -274,7 +274,7 @@
 </member>
 <member name="M:FsBowling.GameModule.isFinished(FsBowling.Game)">
 <summary>
- Determines whether the game is finished.
+ Determines whether a game is finished.
 </summary>
 </member>
 <member name="M:FsBowling.GameModule.roll(System.Int32,FsBowling.Game)">
