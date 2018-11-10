@@ -3,304 +3,304 @@
 <assembly><name>FsBowling</name></assembly>
 <members>
 <member name="T:FsBowling.BowlingError.RollAfterLastFrame">
- <summary>
+<summary>
  The roll occured when the player finished all their frames.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.BowlingError.InvalidScore">
- <summary>
+<summary>
  The score is invalid.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.BowlingError.DuplicatePlayers">
- <summary>
+<summary>
  The list of players contains duplicate names.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.BowlingError.TooManyPlayers">
- <summary>
+<summary>
  Too many players.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.BowlingError.PlayerListEmpty">
- <summary>
+<summary>
  The list of players is empty.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.BowlingError.PlayerNameTooLong">
- <summary>
+<summary>
  The player name exceeds the maximum player name length.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.BowlingError.PlayerNameEmpty">
- <summary>
+<summary>
  The player name is empty.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.BowlingError.InvalidFrameNumber">
- <summary>
+<summary>
  The frame number is invalid.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.BowlingError">
- <summary>
+<summary>
  Represents an error which may occur during the calculation of a bowling score.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.ConfigError.InvalidMaxPlayerCount">
- <summary>
+<summary>
  The max player count is not positive.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.ConfigError.InvalidMaxNameLength">
- <summary>
+<summary>
  The max name length is not positive.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.ConfigError.InvalidNumberOfFrames">
- <summary>
+<summary>
  The number of frames is not positive.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.ConfigError.InvalidNumberOfPins">
- <summary>
+<summary>
  The number of pins is not positive.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.ConfigError">
- <summary>
+<summary>
  Represents an error which may occur during the creation of the configuration.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.Config">
- <summary>
+<summary>
  Represents the configuration of a bowling game.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.ValidatedPlayerNames">
- <summary>
+<summary>
  Represents a valid list of player names.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.PlayerName">
- <summary>
+<summary>
  Represents the name of a player.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.FrameScore">
- <summary>
+<summary>
  Represents a frame score.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.Frame">
- <summary>
+<summary>
  Represents a frame.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.FrameState">
- <summary>
+<summary>
  Represents the state of a frame.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.Player">
- <summary>
+<summary>
  Represents a player.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.Game">
- <summary>
+<summary>
  Represents a game of bowling.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.ConfigModule.create(System.Int32,System.Int32,Microsoft.FSharp.Core.FSharpOption{System.Int32},Microsoft.FSharp.Core.FSharpOption{System.Int32})">
- <summary>
+<summary>
  Creates a configuration.
- </summary>
+</summary>
 </member>
 <member name="P:FsBowling.ConfigModule.defaultConfig">
- <summary>
+<summary>
  The default game configuration.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.ConfigModule.maxPlayerCount(FsBowling.Config)">
- <summary>
+<summary>
  Returns the max player count, if any.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.ConfigModule.maxNameLength(FsBowling.Config)">
- <summary>
+<summary>
  Returns the max name length, if any.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.ConfigModule.numberOfFrames(FsBowling.Config)">
- <summary>
+<summary>
  Returns the number of frames.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.ConfigModule.numberOfPins(FsBowling.Config)">
- <summary>
+<summary>
  Returns the number of pins.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.ConfigModule">
- <summary>
+<summary>
  Contains functions and values to create and manipulate configurations of games.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.PlayerNameModule.validatePlayerNames(Microsoft.FSharp.Collections.FSharpList{FsBowling.PlayerName})">
- <summary>
+<summary>
  Validates a list of players.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.PlayerNameModule.create(System.String)">
- <summary>
+<summary>
  Creates a player name from a string.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.PlayerNameModule.getNames(FsBowling.ValidatedPlayerNames)">
- <summary>
+<summary>
  Returns a list of valid names.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.PlayerNameModule.get(FsBowling.PlayerName)">
- <summary>
+<summary>
  Returns the name of a player.
- </summary>
+</summary>
 </member>
 <member name="T:FsBowling.PlayerNameModule">
- <summary>
- Contains functions to create and manipulate players' names.
- </summary>
+<summary>
+ Contains functions to create and manipulate players&apos; names.
+</summary>
 </member>
 <member name="M:FsBowling.FrameModule.getTotalScores(Microsoft.FSharp.Collections.FSharpList{FsBowling.Frame})">
- <summary>
+<summary>
  Returns a list of scores of frames.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.FrameModule.getScores(System.Collections.Generic.IEnumerable{FsBowling.Frame})">
- <summary>
+<summary>
  Returns a sequence of scores of rolls.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.FrameModule.roll(System.Int32,FsBowling.Frame)">
- <summary>
+<summary>
  Calculates a new frame state based on the score of a roll.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.FrameModule.isLast(FsBowling.Frame)">
- <summary>
+<summary>
  Determines whether a frame is the last frame.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.FrameModule.isFinished(FsBowling.Frame)">
- <summary>
+<summary>
  Determines whether a frame is finished.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.FrameModule.create(System.Int32)">
- <summary>
+<summary>
  Creates a not started frame with a specified number.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.FrameModule.thirdRollScore(FsBowling.FrameScore)">
- <summary>
- Returns a frame score's third roll score.
- </summary>
+<summary>
+ Returns a frame score&apos;s third roll score.
+</summary>
 </member>
 <member name="M:FsBowling.FrameModule.secondRollScore(FsBowling.FrameScore)">
- <summary>
- Returns a frame score's second roll score.
- </summary>
+<summary>
+ Returns a frame score&apos;s second roll score.
+</summary>
 </member>
 <member name="M:FsBowling.FrameModule.firstRollScore(FsBowling.FrameScore)">
- <summary>
- Returns a frame score's first roll score.
- </summary>
+<summary>
+ Returns a frame score&apos;s first roll score.
+</summary>
 </member>
 <member name="M:FsBowling.FrameModule.totalScore(FsBowling.FrameScore)">
- <summary>
- Returns a frame score's total score.
- </summary>
+<summary>
+ Returns a frame score&apos;s total score.
+</summary>
 </member>
 <member name="M:FsBowling.FrameModule.number(FsBowling.Frame)">
- <summary>
- Returns a frame's number.
- </summary>
+<summary>
+ Returns a frame&apos;s number.
+</summary>
 </member>
 <member name="M:FsBowling.FrameModule.state(FsBowling.Frame)">
- <summary>
- Returns a frame's state.
- </summary>
+<summary>
+ Returns a frame&apos;s state.
+</summary>
 </member>
 <member name="T:FsBowling.FrameModule">
- <summary>
+<summary>
  Contains functions to create and manipulate frames, their states and scores.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.PlayerModule.isFinished(FsBowling.Player)">
- <summary>
+<summary>
  Determines whether a player has finished playing.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.PlayerModule.lastFrame(FsBowling.Player)">
- <summary>
+<summary>
  Returns the last frame of a player.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.PlayerModule.roll(System.Int32,FsBowling.Player)">
- <summary>
- Calculates a new list of player's frames based on the score of a roll.
- </summary>
+<summary>
+ Calculates a new list of player&apos;s frames based on the score of a roll.
+</summary>
 </member>
 <member name="M:FsBowling.PlayerModule.create(FsBowling.PlayerName)">
- <summary>
+<summary>
  Creates a player with a specified name.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.PlayerModule.frames(FsBowling.Player)">
- <summary>
- Returns a list of player's frames.
- </summary>
+<summary>
+ Returns a list of player&apos;s frames.
+</summary>
 </member>
 <member name="M:FsBowling.PlayerModule.name(FsBowling.Player)">
- <summary>
- Returns a player's name.
- </summary>
+<summary>
+ Returns a player&apos;s name.
+</summary>
 </member>
 <member name="T:FsBowling.PlayerModule">
- <summary>
+<summary>
  Contains functions to create and manipulate players.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.GameModule.isFinished(FsBowling.Game)">
- <summary>
+<summary>
  Determines whether the game is finished.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.GameModule.roll(System.Int32,FsBowling.Game)">
- <summary>
+<summary>
  Calculates the next game state based on the score of a roll.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.GameModule.currentPlayer(FsBowling.Game)">
- <summary>
+<summary>
  Creates a game with specified players.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.GameModule.create(FsBowling.ValidatedPlayerNames)">
- <summary>
+<summary>
  Creates a game with specified players.
- </summary>
+</summary>
 </member>
 <member name="M:FsBowling.GameModule.players(FsBowling.Game)">
- <summary>
- Returns a game's player list.
- </summary>
+<summary>
+ Returns a game&apos;s player list.
+</summary>
 </member>
 <member name="T:FsBowling.GameModule">
- <summary>
+<summary>
  Contains functions to create and manipulate bowling games.
- </summary>
+</summary>
 </member>
 </members>
 </doc>
