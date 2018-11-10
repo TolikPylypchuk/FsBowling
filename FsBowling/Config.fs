@@ -29,14 +29,14 @@ module Config =
         if num > 0 then num |> Success else [ error num ] |> Failure
 
     let forOption validationFunc =
-        Option.map Success >> Option.map (Validation.bind validationFunc) >> sequence
+        Option.map validationFunc >> sequence
 
     let validateNumPins = positiveOrElse InvalidNumberOfPins
     let validateNumFrames = positiveOrElse InvalidNumberOfFrames
     let validateMaxNameLength = positiveOrElse InvalidMaxNameLength |> forOption
     let validateMaxPlayerCount = positiveOrElse InvalidMaxPlayerCount |> forOption
 
-    let doCreate numPins numFrames maxNameLength maxPlayerCount = {
+    let createConfig numPins numFrames maxNameLength maxPlayerCount = {
         NumberOfPins = numPins
         NumberOfFrames = numFrames
         MaxNameLength = maxNameLength
@@ -49,4 +49,4 @@ module Config =
         let maxNameLength = validateMaxNameLength maxNameLength
         let maxPlayerCount = validateMaxPlayerCount maxPlayerCount
 
-        doCreate <!> numPins <*> numFrames <*> maxNameLength <*> maxPlayerCount
+        createConfig <!> numPins <*> numFrames <*> maxNameLength <*> maxPlayerCount
