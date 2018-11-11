@@ -1,1 +1,0 @@
-﻿module FsBowling.Test.ConfigTests
