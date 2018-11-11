@@ -26,7 +26,7 @@ let tests =
             | None -> ()
         }
 
-        testProperty "A config can be created only with valid values" <| fun numPins numFrames maxNameLength maxPlayerCount ->
+        testProperty "A config can be created with and only with valid values" <| fun numPins numFrames maxNameLength maxPlayerCount ->
             let isNumPinsValid = numPins > 0
             let isNumFramesValid = numFrames > 0
             let isMaxNameLengthValid = maxNameLength |> Option.map (fun length -> length > 0) |> Option.defaultValue true
@@ -43,14 +43,14 @@ let tests =
                 config |> Config.maxPlayerCount = maxPlayerCount
             | Failure errors ->
                 not isConfigValid &&
-                (not isNumPinsValid => (errors |> List.contains (InvalidNumberOfPins numPins))) &&
-                (not isNumFramesValid => (errors |> List.contains (InvalidNumberOfFrames numFrames))) &&
-                (not isMaxNameLengthValid =>
+                (not isNumPinsValid <=> (errors |> List.contains (InvalidNumberOfPins numPins))) &&
+                (not isNumFramesValid <=> (errors |> List.contains (InvalidNumberOfFrames numFrames))) &&
+                (not isMaxNameLengthValid <=>
                     (maxNameLength
                     |> Option.map InvalidMaxNameLength
                     |> Option.map (fun error -> errors |> List.contains error)
                     |> Option.defaultValue false)) &&
-                (not isMaxPlayerCountValid =>
+                (not isMaxPlayerCountValid <=>
                     (maxPlayerCount
                     |> Option.map InvalidMaxPlayerCount
                     |> Option.map (fun error -> errors |> List.contains error)
