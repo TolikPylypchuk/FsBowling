@@ -43,14 +43,14 @@ let tests =
                 config |> Config.maxPlayerCount = maxPlayerCount
             | Failure errors ->
                 not isConfigValid &&
-                (not isNumPinsValid <=> (errors |> List.contains (InvalidNumberOfPins numPins))) &&
-                (not isNumFramesValid <=> (errors |> List.contains (InvalidNumberOfFrames numFrames))) &&
-                (not isMaxNameLengthValid <=>
+                (not isNumPinsValid = (errors |> List.contains (InvalidNumberOfPins numPins))) &&
+                (not isNumFramesValid = (errors |> List.contains (InvalidNumberOfFrames numFrames))) &&
+                (not isMaxNameLengthValid =
                     (maxNameLength
                     |> Option.map InvalidMaxNameLength
                     |> Option.map (fun error -> errors |> List.contains error)
                     |> Option.defaultValue false)) &&
-                (not isMaxPlayerCountValid <=>
+                (not isMaxPlayerCountValid =
                     (maxPlayerCount
                     |> Option.map InvalidMaxPlayerCount
                     |> Option.map (fun error -> errors |> List.contains error)

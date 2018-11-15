@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Operators.fs" />
     <Compile Include="ConfigTests.fs" />
     <Compile Include="TestProgram.fs" />
   </ItemGroup>
