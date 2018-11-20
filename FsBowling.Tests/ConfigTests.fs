@@ -6,25 +6,21 @@ open Expecto
 [<Tests>]
 let tests =
     testList "Config tests" [
-        test "The default config has a valid number of pins" {
-            Expect.isGreaterThan (Config.defaultConfig |> Config.numberOfPins) 0 "The default config doesn't have a valid number of pins."
-        }
+        testProperty "The default config has a valid number of pins" <| fun () ->
+            (Config.defaultConfig |> Config.numberOfPins) > 0
 
-        test "The default config has a valid number of frames" {
-            Expect.isGreaterThan (Config.defaultConfig |> Config.numberOfFrames) 0 "The default config doesn't have a valid number of frames."
-        }
+        testProperty "The default config has a valid number of frames" <| fun () ->
+            (Config.defaultConfig |> Config.numberOfFrames) > 0
 
-        test "The default config has a valid max name length" {
+        testProperty "The default config has a valid max name length" <| fun () ->
             match Config.defaultConfig |> Config.maxNameLength with
-            | Some length -> Expect.isGreaterThan length 0 "The default config doesn't have a valid max name length."
-            | None -> ()
-        }
+            | Some length -> length > 0
+            | None -> true
 
-        test "The default config has a valid max player count" {
+        testProperty "The default config has a valid max player count" <| fun () ->
             match Config.defaultConfig |> Config.maxPlayerCount with
-            | Some count -> Expect.isGreaterThan count 0 "The default config doesn't have a valid max player count."
-            | None -> ()
-        }
+            | Some count -> count > 0
+            | None -> true
 
         testProperty "A config can be created with and only with valid values" <| fun numPins numFrames maxNameLength maxPlayerCount ->
             let isNumPinsValid = numPins > 0
