@@ -6,6 +6,8 @@ open FSharpPlus.Data
 let createConfig (numPins, numFrames, nameLength, playerCount) =
     Config.create numPins numFrames nameLength playerCount
 
+let createPlayerName = PlayerName.create
+
 let with' config reader =
     Reader.run reader config
 
