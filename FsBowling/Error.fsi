@@ -33,7 +33,7 @@ type BowlingError =
     | PlayerListEmpty
     
     /// Too many players.
-    | TooManyPlayers
+    | TooManyPlayers of int
     
     /// The list of players contains duplicate names.
     | DuplicatePlayers of NonEmptyList<string>

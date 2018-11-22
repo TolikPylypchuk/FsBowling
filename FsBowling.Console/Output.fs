@@ -97,8 +97,8 @@ let formatError error = monad {
             sprintf "The name is too long. A player's name should not exceed %i characters." (config |> Config.maxNameLength |> Option.defaultValue 0)
         | PlayerListEmpty ->
             "The player list is empty."
-        | TooManyPlayers ->
-            "The player list is empty."
+        | TooManyPlayers players ->
+            sprintf "%i is too many players. The number of players must be at most %i." players (config |> Config.maxNameLength |> Option.defaultValue 0)
         | DuplicatePlayers players ->
             match players.Tail with
             | [] ->

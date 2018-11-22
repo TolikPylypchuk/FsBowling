@@ -35,7 +35,7 @@ module PlayerName =
             else
                 match config |> Config.maxPlayerCount with
                 | Some count when players |> List.length > count ->
-                    TooManyPlayers |> Error
+                    players |> List.length |> TooManyPlayers |> Error
                 | _ ->
                     let duplicatePlayers =
                         players

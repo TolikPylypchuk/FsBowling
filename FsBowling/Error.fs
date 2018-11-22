@@ -13,7 +13,7 @@ type BowlingError =
     | PlayerNameEmpty
     | PlayerNameTooLong of string
     | PlayerListEmpty
-    | TooManyPlayers
+    | TooManyPlayers of int
     | DuplicatePlayers of NonEmptyList<string>
     | InvalidScore of int
     | RollAfterLastFrame
